@@ -254,16 +254,16 @@ ss
 {% if teachers|length > 0 %}
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
-      <h5 class="card-title my_card_title">Teachers</h5>
+      <h5 class="card-title my_card_title">Faculties</h5>
     </div>
   </div>
 {% for teacher in teachers %}
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
       <h5 class="card-title">{{ teacher.teachername }}</h5>
-      <a href="{% url 'editteacher' randomid=theschool.randomid teacherrandomid=teacher.randomid %}" class="card-link">Edit Teacher</a>
-      {% if teacher.ifcandelete is True %}<a href="{% url 'deleteteachers' randomid=theschool.randomid teacherrandomid=teacher.randomid %}" class="card-link">Delete teacher (This is not reversible)</a>
-      {% else %}<a href="#" class="card-link disabled">To delete this teacher, delete the timetable using this teacher.</a>{% endif %}
+      <a href="{% url 'editteacher' randomid=theschool.randomid teacherrandomid=teacher.randomid %}" class="card-link">Edit Faculty</a>
+      {% if teacher.ifcandelete is True %}<a href="{% url 'deleteteachers' randomid=theschool.randomid teacherrandomid=teacher.randomid %}" class="card-link">Delete faculty (This is not reversible)</a>
+      {% else %}<a href="#" class="card-link disabled">To delete this faculty, delete the timetable using this faculty.</a>{% endif %}
     </div>
 </div>
 {% endfor %}
@@ -271,12 +271,12 @@ ss
     <div class="row">
         <div class="col-md-6">
             <button class="btn mt-2 mx-2"  style="width: 95%;">
-                <a href="{% url 'addteacher' randomid=theschool.randomid %}">Add New Teacher</a>
+                <a href="{% url 'addteacher' randomid=theschool.randomid %}">Add New Faculty</a>
             </button>
           </div>
         <div class="col-md-6">
             <button class="btn mt-2 mx-2"  style="width: 95%;">
-              <a href="{% url 'teacherview' randomid=theschool.randomid %}">View All Teachers</a>
+              <a href="{% url 'teacherview' randomid=theschool.randomid %}">View All Faculties</a>
             </button>
         </div>
     </div>
@@ -284,14 +284,14 @@ ss
 {% else %}
 <div class="card mt-2 mx-3" style="width: 95%;">
   <div class="card-body">
-    <h5 class="card-title">Sorry, you have no teachers currently.</h5>
+    <h5 class="card-title">Sorry, you have no Faculties currently.</h5>
   </div>
 </div>
 <div class="container mb-3">
     <div class="row">
         <div class="col-md-12">
             <button class="btn mt-2 mx-2"  style="width: 95%;">
-                <a href="{% url 'addteacher' randomid=theschool.randomid %}">Add New Teacher</a>
+                <a href="{% url 'addteacher' randomid=theschool.randomid %}">Add New Faculty</a>
             </button>
           </div>
     </div>

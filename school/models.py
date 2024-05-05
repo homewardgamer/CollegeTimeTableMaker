@@ -20,7 +20,7 @@ class School(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, db_index=True)
     schoolname = models.CharField(max_length=200)
     randomid = models.CharField(max_length=60, unique=True)
-    schoollogo = models.ImageField(upload_to='logo', validators=[validate_logo], default='logo.jpg')
+    schoollogo = models.ImageField(upload_to='logo', validators=[validate_logo], default='logo.png')
         
     class Meta:
         verbose_name = ("School")

@@ -5,23 +5,23 @@
 {% if schools|length > 0 %}
 <div class="card mt-2 mx-3" style="width: 95%;">
   <div class="card-body">
-    <h5 class="card-title my_card_title">Schools</h5>
+    <h5 class="card-title my_card_title">Colleges</h5>
   </div>
 </div>
 {% for school in schools %}
 <div class="card mt-2 mx-3" style="width: 95%;">
   <div class="card-body">
     <h5 class="card-title">{{ school.schoolname }}</h5>
-    <a href="{% url 'schoolview' randomid=school.randomid %}" class="card-link">View School</a>
-    <a href="{% url 'editschool' randomid=school.randomid %}" class="card-link">Edit School</a>
-    <a href="{% url 'deleteschool' randomid=school.randomid %}" class="card-link">Delete School (This is not reversible)</a>
+    <a href="{% url 'schoolview' randomid=school.randomid %}" class="card-link">View College</a>
+    <a href="{% url 'editschool' randomid=school.randomid %}" class="card-link">Edit College</a>
+    <a href="{% url 'deleteschool' randomid=school.randomid %}" class="card-link">Delete College (This is not reversible)</a>
   </div>
 </div>
 {% endfor %}
 {% else %}
 <div class="card mt-2 mx-3" style="width: 95%;">
   <div class="card-body">
-    <h5 class="card-title">Sorry, you have no schools currently.</h5>
+    <h5 class="card-title">Sorry, you have no colleges currently.</h5>
   </div>
 </div>
 {% endif %}
@@ -29,12 +29,12 @@
   <div class="row">
     <div class="col-md-6">
       <button class="btn mt-2 mx-2"  style="width: 95%;">
-        <a href="{% url 'addschool' %}">Add New School</a>
+        <a href="{% url 'addschool' %}">Add New College</a>
       </button>
     </div>
     <div class="col-md-6">
       <button class="btn mt-2 mx-2"  style="width: 95%;">
-        <a href="{% url 'schooldisplay' %}">View All Schools</a>
+        <a href="{% url 'schooldisplay' %}">View All Colleges</a>
       </button>
     </div>
   </div>

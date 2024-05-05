@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('schoolname', models.CharField(max_length=200)),
                 ('randomid', models.CharField(max_length=60, unique=True)),
-                ('schoollogo', models.ImageField(default='logo.jpg', upload_to='logo', validators=[school.validators.validate_logo])),
+                ('schoollogo', models.ImageField(default='logo.png', upload_to='logo', validators=[school.validators.validate_logo])),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={

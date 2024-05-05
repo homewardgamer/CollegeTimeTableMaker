@@ -127,6 +127,7 @@ def checktimetablerequiremnets(theschool):
                 classspecificationscount = classspecifications.count()
 
                 # Convert lesson duration to minutes
+                print(agroup.lessonduration)
                 lesson_duration_time = time(minute=agroup.lessonduration)
 
                 lesson_duration = timedelta(hours=lesson_duration_time.hour, minutes=lesson_duration_time.minute, seconds=lesson_duration_time.second)
