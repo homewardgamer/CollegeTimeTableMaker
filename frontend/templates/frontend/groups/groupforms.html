@@ -5,28 +5,28 @@
 {% block title %} {{ thelabel }} {% endblock %}
 
 
-{% block schooldetails %}
-<a class="navbar-brand" href="{% url 'groupdisplay' randomid=theschool.randomid groupslug=thegroup.slug %}"><img src="{{ theschool.schoollogo.url }}" alt="{{ theschool.schoolname }}"  height="50px"> | {{ theschool.schoolname }} | {{ thegroup.groupname }}</a>
+{% block collegedetails %}
+<a class="navbar-brand" href="{% url 'groupdisplay' randomid=thecollege.randomid groupslug=thegroup.slug %}"><img src="{{ thecollege.collegelogo.url }}" alt="{{ thecollege.collegename }}"  height="50px"> | {{ thecollege.collegename }} | {{ thegroup.groupname }}</a>
 {% endblock %}
 
 {% block navigation %}
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'classview' randomid=theschool.randomid groupslug=thegroup.slug %}">Class</a>
+    <a class="nav-link" href="{% url 'classview' randomid=thecollege.randomid groupslug=thegroup.slug %}">Class</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'routineview' randomid=theschool.randomid groupslug=thegroup.slug %}">Routine</a>
+    <a class="nav-link" href="{% url 'routineview' randomid=thecollege.randomid groupslug=thegroup.slug %}">Routine</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'breakview' randomid=theschool.randomid groupslug=thegroup.slug %}">Breaks</a>
+    <a class="nav-link" href="{% url 'breakview' randomid=thecollege.randomid groupslug=thegroup.slug %}">Breaks</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'groupsubjectsview' randomid=theschool.randomid groupslug=thegroup.slug %}">Subjects</a>
+    <a class="nav-link" href="{% url 'groupsubjectsview' randomid=thecollege.randomid groupslug=thegroup.slug %}">Subjects</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'lessonsview' randomid=theschool.randomid groupslug=thegroup.slug %}">Lessons</a>
+    <a class="nav-link" href="{% url 'lessonsview' randomid=thecollege.randomid groupslug=thegroup.slug %}">Lessons</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'specificationsview' randomid=theschool.randomid groupslug=thegroup.slug %}">Specifications</a>
+    <a class="nav-link" href="{% url 'specificationsview' randomid=thecollege.randomid groupslug=thegroup.slug %}">Specifications</a>
 </li>
 {% endblock %}
 

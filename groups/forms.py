@@ -2,14 +2,14 @@ from dataclasses import fields
 from pyexpat import model
 from django import forms
 
-from school.models import Streams, Subjects, Teachers
-from .models import SchoolGroups, Groupbreaks, Groupclasses, Grouproutine, Groupsubjects, GroupSpecifiction, Groupsubjectteachers
+from college.models import Streams, Subjects, Teachers
+from .models import CollegeGroups, Groupbreaks, Groupclasses, Grouproutine, Groupsubjects, GroupSpecifiction, Groupsubjectteachers
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.conf import settings
 from django.utils.text import slugify
 
-# Form for adding or editing the SchooolGroups model. Ensures group name is unique per school.
+# Form for adding or editing the SchooolGroups model. Ensures group name is unique per college.
 class GroupsForm(forms.ModelForm):
     groupname = forms.CharField(
         required=True,
@@ -24,11 +24,11 @@ class GroupsForm(forms.ModelForm):
     )
 
     class Meta:
-        model = SchoolGroups
+        model = CollegeGroups
         fields = ['groupname', 'lessonduration']
 
     def __init__(self, *args, **kwargs):
-        self.currentschool = kwargs.pop('theschool')
+        self.currentcollege = kwargs.pop('thecollege')
         self.currentstate = kwargs.pop('thestate')
         self.initialgroupname = kwargs.pop('groupname')
         super(GroupsForm, self).__init__(*args, **kwargs)
@@ -42,8 +42,8 @@ class GroupsForm(forms.ModelForm):
         enteredgroupname = cleaned_data.get("groupname")
         slugifiedtitle = slugify(enteredgroupname)
 
-        # Get number of items matching slug groups name of current school
-        checksgroupname = SchoolGroups.objects.filter(school__id=self.currentschool.id, slug=slugifiedtitle).count()
+        # Get number of items matching slug groups name of current college
+        checksgroupname = CollegeGroups.objects.filter(college__id=self.currentcollege.id, slug=slugifiedtitle).count()
 
         # In case one is adding a group
         if self.currentstate == 'Add':
@@ -68,7 +68,7 @@ class ClassForm(forms.ModelForm):
         fields = ['stream', 'classteacher', 'classname']
 
     def __init__(self, *args, **kwargs):
-        self.currentschool = kwargs.pop('theschool')
+        self.currentcollege = kwargs.pop('thecollege')
         self.currentgroup = kwargs.pop('thegroup')
         self.currentstate = kwargs.pop('thestate')
         self.initialclassname = kwargs.pop('classname')
@@ -83,14 +83,14 @@ class ClassForm(forms.ModelForm):
                 required=True,
                 label='Choose your class teacher',
                 help_text='A class teacher is unique per class',
-                queryset=Teachers.objects.filter(school__id=self.currentschool.id),
+                queryset=Teachers.objects.filter(college__id=self.currentcollege.id),
             )
         
         # Initialize streams
         self.fields['stream'] = forms.ModelChoiceField(
                 required=True,
                 label='Choose your Stream',
-                queryset=Streams.objects.filter(school__id=self.currentschool.id),
+                queryset=Streams.objects.filter(college__id=self.currentcollege.id),
             )
 
         self.helper = FormHelper()
@@ -307,7 +307,7 @@ class BreaksForm(forms.ModelForm):
                         if ((starttime <= one.starttime) and (endtime > one.starttime)) or ((starttime >= one.starttime) and (starttime <  one.endtime)):
                             raise forms.ValidationError("There is already a specification in this given period")
 
-# Form for adding or editing Groupsubjects model. Ensure you the subject entered is unique in the group. Load subjets from the subjects saved in the current school.
+# Form for adding or editing Groupsubjects model. Ensure you the subject entered is unique in the group. Load subjets from the subjects saved in the current college.
 class GroupSubjectsForm(forms.ModelForm):
 
     class Meta:
@@ -315,7 +315,7 @@ class GroupSubjectsForm(forms.ModelForm):
         fields = ['subject']
 
     def __init__(self, *args, **kwargs):
-        self.currentschool = kwargs.pop('theschool')
+        self.currentcollege = kwargs.pop('thecollege')
         self.currentgroup = kwargs.pop('thegroup')
         self.currentstate = kwargs.pop('thestate')
         self.initialsubject = kwargs.pop('thesubject')
@@ -324,8 +324,8 @@ class GroupSubjectsForm(forms.ModelForm):
         self.fields['subject'] = forms.ModelChoiceField(
             required=True,
             label='Choose your subject',
-            help_text='Subjects are chosen from the subjects entered in your school',
-            queryset=Subjects.objects.filter(school__id=self.currentschool.id),
+            help_text='Subjects are chosen from the subjects entered in your college',
+            queryset=Subjects.objects.filter(college__id=self.currentcollege.id),
         )
 
         self.helper = FormHelper()
@@ -351,7 +351,7 @@ class GroupSubjectsForm(forms.ModelForm):
                     raise forms.ValidationError("The subject name should be unique per group")
 
 
-# Form for adding or editing Groupsubjectteachers model. Load subjects of this group from groupsubjects model of current group. Load classes of current group from Groupclasses model. Load teachers from teachers saved of the current school. For a lesson, a particular class and a particular subject has only one teacher.
+# Form for adding or editing Groupsubjectteachers model. Load subjects of this group from groupsubjects model of current group. Load classes of current group from Groupclasses model. Load teachers from teachers saved of the current college. For a lesson, a particular class and a particular subject has only one teacher.
 class LessonForm(forms.ModelForm):
     
     nooflessonsperweek = forms.IntegerField(
@@ -365,7 +365,7 @@ class LessonForm(forms.ModelForm):
         fields = ['groupsubjects', 'theclass', 'teacher', 'nooflessonsperweek']
 
     def __init__(self, *args, **kwargs):
-        self.currentschool = kwargs.pop('theschool')
+        self.currentcollege = kwargs.pop('thecollege')
         self.currentgroup = kwargs.pop('thegroup')
         self.initiallesson = kwargs.pop('thelesson')
         self.currentstate = kwargs.pop('thestate')
@@ -374,7 +374,7 @@ class LessonForm(forms.ModelForm):
         self.fields['groupsubjects'] = forms.ModelChoiceField(
             required=True,
             label='Choose your subject',
-            help_text='Subjects are chosen from the subjects entered in your school',
+            help_text='Subjects are chosen from the subjects entered in your college',
             queryset=Groupsubjects.objects.filter(group__id=self.currentgroup.id),
         )
 
@@ -387,7 +387,7 @@ class LessonForm(forms.ModelForm):
         self.fields['teacher'] = forms.ModelChoiceField(
             required=True,
             label='Choose the teacher',
-            queryset=Teachers.objects.filter(school__id=self.currentschool.id),
+            queryset=Teachers.objects.filter(college__id=self.currentcollege.id),
         )
 
         self.helper = FormHelper()

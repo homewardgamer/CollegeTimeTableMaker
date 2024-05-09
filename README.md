@@ -1,6 +1,6 @@
 # TimetableGenerator
 
-> This is a django project used to generate timetables for a school which could be output as a pdf and downloaded.
+> This is a django project used to generate timetables for a college which could be output as a pdf and downloaded.
 
 ![Timetable](screenshots/timetable.jpg "A generated timetable output for a class")
 
@@ -51,7 +51,7 @@ In case you want a normal account with no admin priviledges, navigate to `127.0.
 
 ![register and login page](screenshots/login.jpg "Registration and Log in")
 
-You may want to modify the values for the last four variables in your settings.py. Thepurpose of the four variables is to reduce the strain of typing values manuaaly which may otherwise be redundant in your school.
+You may want to modify the values for the last four variables in your settings.py. Thepurpose of the four variables is to reduce the strain of typing values manuaaly which may otherwise be redundant in your college.
 
 ![settings.py file](screenshots/settings.png "Settings.py file")
 
@@ -65,42 +65,42 @@ Here are some of the screenshots of the application.
 
 ![Home page](screenshots/homepage.png "Home Page")
 
-![School page](screenshots/timetable_2.jpg "Schools home page")
+![College page](screenshots/timetable_2.jpg "Colleges home page")
 
 # Features
 - Lesson specification at a particular time.
-- Generate random colors for a given subject for a school for visual appeal as one generates a timetable.
-- Accommodate all days of the week to fit any school's routine.
+- Generate random colors for a given subject for a college for visual appeal as one generates a timetable.
+- Accommodate all days of the week to fit any college's routine.
 - Specify the routine of a particular teacher to generate a timetable fitting his/her schedule.
-- Check if a school can generate its own timetable and reports on its errors in case of any.
-- Flexibility - One can specify how long a given group of a school should start or stop their daily sessions.
+- Check if a college can generate its own timetable and reports on its errors in case of any.
+- Flexibility - One can specify how long a given group of a college should start or stop their daily sessions.
 
 # Usage example
 
 - Register for an account/ Log in if you already have an account.
-- Create a school. (A school logo is optional and the school name you enter should be unique in your account).
-    > When you view a school, you should see what you need to add first before generating a timetable.
+- Create a college. (A college logo is optional and the college name you enter should be unique in your account).
+    > When you view a college, you should see what you need to add first before generating a timetable.
 
-    ![School home page](screenshots/school_home.png "School home page")
+    ![College home page](screenshots/college_home.png "College home page")
 
-    - Add subjects in your school. The subject name you enter should be unique for your school.  You can only delete a subject, if you delete the timetable using that subject. However, you can edit the subject's details.
-    - Add streams in your school. At least all classes in a school should have a stream. The stream name you entered should be unique for that school.  You can only delete a stream, if you delete the class using that stream. However, you can edit the stream's details.
-    - Add teachers in your school. As you add a teacher, you should specify for each day, the teacher's routine. You can only delete a teacher, if you delete the timetable using that teacher. However, you can edit the teacher's details.
-    - Add groups in your school. A group is where you define the routine, classes, breaks and lessons since a school may have different classes having their own routine.
+    - Add subjects in your college. The subject name you enter should be unique for your college.  You can only delete a subject, if you delete the timetable using that subject. However, you can edit the subject's details.
+    - Add streams in your college. At least all classes in a college should have a stream. The stream name you entered should be unique for that college.  You can only delete a stream, if you delete the class using that stream. However, you can edit the stream's details.
+    - Add teachers in your college. As you add a teacher, you should specify for each day, the teacher's routine. You can only delete a teacher, if you delete the timetable using that teacher. However, you can edit the teacher's details.
+    - Add groups in your college. A group is where you define the routine, classes, breaks and lessons since a college may have different classes having their own routine.
 
     ---
 
-    ![School](screenshots/school_1.jpg)
+    ![College](screenshots/college_1.jpg)
 
-    ![School](screenshots/school_2.jpg)
+    ![College](screenshots/college_2.jpg)
 
-    > When you do all the above steps, the school home page will change as follows. The page will show you, what for each group to generate a timetable
+    > When you do all the above steps, the college home page will change as follows. The page will show you, what for each group to generate a timetable
 
-    ![School home page example 2](screenshots/school_home2.png "School home page example 2")
+    ![College home page example 2](screenshots/college_home2.png "College home page example 2")
 
 - For each group you have created:
 
-    - Add subjects to the group. The subjects list is from the subjects you have in your school. A subject is only added once in a group.
+    - Add subjects to the group. The subjects list is from the subjects you have in your college. A subject is only added once in a group.
     - Add classes. A class name of a particular stream only exists once in a given group. A class teacher can only have one class in that group. You can only delete a class, if you delete the timetable using that class. However, you can edit the class's details.
     - Add a routine for all days to include in your timetable with appropriate times. The routine of a particular day is chosen only once in that group.
     - Add lessons in that group. For a given class and a given subject, there is only one teacher. The number of lessons per week should be of good estimates lest you have an error as you generate your timetable.
@@ -109,11 +109,11 @@ Here are some of the screenshots of the application.
 
     ---
 
-    ![School Group](screenshots/group_1.jpg)
+    ![College Group](screenshots/group_1.jpg)
 
-    ![School Group](screenshots/group_2.jpg)
+    ![College Group](screenshots/group_2.jpg)
 
-- If you have done all the above steps, you may ***check if your school meets the reqirements to generate a timetable*** in the school's homepage.
+- If you have done all the above steps, you may ***check if your college meets the reqirements to generate a timetable*** in the college's homepage.
 - If you meet all requirements, you may generate a timetable. Any erros will be reported in case they occur.
 
 # Project Structure
@@ -121,8 +121,8 @@ Here are some of the screenshots of the application.
 The django project is divide in to four apps.
 
 * frontend - Contain the all the templates used by the project.
-* groups - Contain all school groups related information
-* schools - Contin user-related and school-related information.
+* groups - Contain all college groups related information
+* colleges - Contin user-related and college-related information.
 * timetable - Contain timetable-related information with the algorithims on timetable oprations.
 
 # Built With

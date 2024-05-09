@@ -1,63 +1,63 @@
-from school.models import Subjects, Teachers, Streams, TeachersRoutine
-from groups.models import SchoolGroups, Groupsubjects, Groupsubjectteachers, Grouproutine, Groupclasses, GroupSpecifiction, Groupbreaks
+from college.models import Subjects, Teachers, Streams, TeachersRoutine
+from groups.models import CollegeGroups, Groupsubjects, Groupsubjectteachers, Grouproutine, Groupclasses, GroupSpecifiction, Groupbreaks
 from timetable.models import Timetablegroup, Timetablelessons, Timetablebreaks
 from django.conf import settings
 import random
 from datetime import timedelta, time
 
-# Check whether a particular school meets the requirements of generating a timetable(having teachers, subjects, streams, groups). It reports on any encountered errors.
-def checktimetablerequiremnets_school(theschool):
+# Check whether a particular college meets the requirements of generating a timetable(having teachers, subjects, streams, groups). It reports on any encountered errors.
+def checktimetablerequiremnets_college(thecollege):
     # Store all errors
     timetableerrors = []
 
-    # Ensure the school has subjects
-    checksubjects = Subjects.objects.filter(school__id=theschool.id).count()
+    # Ensure the college has subjects
+    checksubjects = Subjects.objects.filter(college__id=thecollege.id).count()
     # If there are no subjects
     if checksubjects == 0:
         error_dict = {
-            "error": 'You must have subjects in the school',
+            "error": 'You must have subjects in the college',
         }
         timetableerrors.append(error_dict)
 
-    # Ensure the school has teachers
-    checkteachers = Teachers.objects.filter(school__id=theschool.id).count()
+    # Ensure the college has teachers
+    checkteachers = Teachers.objects.filter(college__id=thecollege.id).count()
     # If there are no teachers
     if checkteachers == 0:
         error_dict = {
-            "error": 'You must have teachers in the school',
+            "error": 'You must have teachers in the college',
         }
         timetableerrors.append(error_dict)
 
-    # Ensure the school has streasms
-    checkstreams = Streams.objects.filter(school__id=theschool.id).count()
+    # Ensure the college has streasms
+    checkstreams = Streams.objects.filter(college__id=thecollege.id).count()
     # If there are no streams
     if checkstreams == 0:
         error_dict = {
-            "error": 'You must have streams in the school',
+            "error": 'You must have streams in the college',
         }
         timetableerrors.append(error_dict)
 
-    # Ensure the school has groups
-    checkgroups = SchoolGroups.objects.filter(school__id=theschool.id).count()
+    # Ensure the college has groups
+    checkgroups = CollegeGroups.objects.filter(college__id=thecollege.id).count()
     # If there are no groups
     if checkgroups == 0:
         error_dict = {
-            "error": 'You must have groups in the school',
+            "error": 'You must have groups in the college',
         }
         timetableerrors.append(error_dict)
 
     return timetableerrors
 
-# If the school meets the requirements, it checks whether the groups of a particular school haas subjects within it, classes, lessons and routines. It reports on any encountered errors.
-def checktimetablerequiremnets_group(theschool):
+# If the college meets the requirements, it checks whether the groups of a particular college haas subjects within it, classes, lessons and routines. It reports on any encountered errors.
+def checktimetablerequiremnets_group(thecollege):
     # Store all errors
     timetableerrors = []
 
-    # Get the groups of the school
-    schoolgrps = SchoolGroups.objects.filter(school__id=theschool.id)
+    # Get the groups of the college
+    collegegrps = CollegeGroups.objects.filter(college__id=thecollege.id)
 
     # Loop though all groups
-    for agroup in schoolgrps:
+    for agroup in collegegrps:
         # Ensure the group has subjects
         checksubjects = Groupsubjects.objects.filter(group__id=agroup.id).count()
         # If there are no subjects
@@ -97,20 +97,20 @@ def checktimetablerequiremnets_group(theschool):
     return timetableerrors
 
 # Check general timetable requirements
-# If there are no errors from checktimetablerequiremnets_school and checktimetablerequiremnets_group
-# checks to see for all classes in the school, the given group's lesson duration, breaks, lesson specifications all lie within the routine of its group. 
+# If there are no errors from checktimetablerequiremnets_college and checktimetablerequiremnets_group
+# checks to see for all classes in the college, the given group's lesson duration, breaks, lesson specifications all lie within the routine of its group. 
 # It reports on any encountered errors. 
 # This function uses for four other functions which run recursively depending on whether a given group has breaks or not and if a given class has lesson specifications or not. 
 # The four functions stop when the start time they are incrementing is equal to or greater than the routine end time of aa particular day. If the value is greater, an error is reported. The four functions update the start time  and the indexes of breaks or the indexes of class specifications appropriately ensuing the list does not become of ouf range.
-def checktimetablerequiremnets(theschool):
+def checktimetablerequiremnets(thecollege):
     # Store all errors
     timetableerrors = []
 
-    # Get the groups of the school
-    schoolgrps = SchoolGroups.objects.filter(school__id=theschool.id)
+    # Get the groups of the college
+    collegegrps = CollegeGroups.objects.filter(college__id=thecollege.id)
 
     # Loop though all groups
-    for agroup in schoolgrps:
+    for agroup in collegegrps:
         # Get the routine of this group
         allroutines = Grouproutine.objects.filter(group__id=agroup.id)
         # Get all classes in this group
@@ -370,25 +370,25 @@ def calculate_time(seconds):
 
 
 # Create a timetable
-def createtimetable(theschool, tries_timetable):
+def createtimetable(thecollege, tries_timetable):
     # Only tries to create a imetable three tines, if there is an error, it tells the user to try again.
     if (tries_timetable == 3):
         return False
 
-    # Get number of timetables of the school
-    timetable_number = Timetablegroup.objects.filter(school__id=theschool.id).count()
+    # Get number of timetables of the college
+    timetable_number = Timetablegroup.objects.filter(college__id=thecollege.id).count()
     # Creates a new timetablegroup with an auto generated name
     timetable_name = f'Timetable_{timetable_number+1}'
     newtimetable = Timetablegroup()
-    newtimetable.school = theschool
+    newtimetable.college = thecollege
     newtimetable.timetablegroupname = timetable_name
     newtimetable.save()
 
     # Store the lessons of a given day of a given teacher
     # Ensure there is no collisions occuring during the geneation of a timetable.
     teacherlessons = []
-    # Get all teachers in the school
-    allteachers = Teachers.objects.filter(school__id=theschool.id)
+    # Get all teachers in the college
+    allteachers = Teachers.objects.filter(college__id=thecollege.id)
     # Loop for all teachers
     for oneteacher in allteachers:
         all_days = []
@@ -405,11 +405,11 @@ def createtimetable(theschool, tries_timetable):
 
         teacherlessons.append(name_dict)
 
-    # Get the groups of the school
-    schoolgrps = SchoolGroups.objects.filter(school__id=theschool.id)
+    # Get the groups of the college
+    collegegrps = CollegeGroups.objects.filter(college__id=thecollege.id)
 
-    # Loop through all specifications in the groups of a particular school and add the lessons in the list of 'teacherlessons' to ensure those sessions are booked and the teacher does not have another lesson at this particular time.
-    for agroup in schoolgrps:
+    # Loop through all specifications in the groups of a particular college and add the lessons in the list of 'teacherlessons' to ensure those sessions are booked and the teacher does not have another lesson at this particular time.
+    for agroup in collegegrps:
         # Store all group specifications
         group_specifications = GroupSpecifiction.objects.filter(groupsubjectteachers__groupsubjects__group__id=agroup.id)
         # Loop through all specifications
@@ -460,7 +460,7 @@ def createtimetable(theschool, tries_timetable):
                     break
 
     # Loop though all groups
-    for agroup in schoolgrps:
+    for agroup in collegegrps:
         # Get the routine of this group
         allroutines = Grouproutine.objects.filter(group__id=agroup.id)
         # Get all classes in this group
@@ -683,11 +683,11 @@ def createtimetable(theschool, tries_timetable):
                                             
                                             timetable_errors = []
                                             error_dict = {  
-                                                "error": f'There was an error creating the timetable. Please ensure the number of lessons per week are of good estimates. Please ensure the routine of  teacher in your school is flexible. ',
+                                                "error": f'There was an error creating the timetable. Please ensure the number of lessons per week are of good estimates. Please ensure the routine of  teacher in your college is flexible. ',
                                             }
                                             timetable_errors.append(error_dict)
 
-                                            result = createtimetable(theschool, tries_timetable)
+                                            result = createtimetable(thecollege, tries_timetable)
                                             if not result:
                                                 return False
                                     # If there was no collission, performs an addition of the lesson
@@ -749,7 +749,7 @@ def createtimetable(theschool, tries_timetable):
                                         newly_created.delete()
                                         tries_timetable += 1
                                         
-                                        result = createtimetable(theschool, tries_timetable)
+                                        result = createtimetable(thecollege, tries_timetable)
                                         if not result:
                                             return False
                     

@@ -1,0 +1,37 @@
+{% extends "base/college.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} {{ thelabel }} {% endblock %}
+
+{% block collegedetails %}
+<a class="navbar-brand" href="{% url 'collegeview' randomid=thecollege.randomid %}"><img src="{{ thecollege.collegelogo.url }}" alt="{{ thecollege.collegename }}" height="50px"> | {{ thecollege.collegename }}</a>
+{% endblock %}
+
+{% block navigation %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'groupview' randomid=thecollege.randomid %}">Groups</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'subjectview' randomid=thecollege.randomid %}">Subjects</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'streamview' randomid=thecollege.randomid %}">Streams</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'teacherview' randomid=thecollege.randomid %}">Teachers</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'timetablesview' randomid=thecollege.randomid %}">Timetables</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<!-- Form -->
+<div class="page-content">
+    <div class="form-v5-content">
+        <label class="form-title">{{ thelabel }}</label>
+        {% crispy form %}
+    </div>
+</div>
+{% endblock %}

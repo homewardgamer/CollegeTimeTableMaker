@@ -2,10 +2,10 @@ from django.contrib import admin
 from .models import *
 
 
-class SchoolGroupsAdmin(admin.ModelAdmin):
+class CollegeGroupsAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug":("groupname",)}
     
-admin.site.register(SchoolGroups, SchoolGroupsAdmin)
+admin.site.register(CollegeGroups, CollegeGroupsAdmin)
 
 admin.site.register(Grouproutine)
 

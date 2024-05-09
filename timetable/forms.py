@@ -11,7 +11,7 @@ class TimetableGroupForm(forms.ModelForm):
     timetablegroupname = forms.CharField(
         required=True,
         label='Enter your Timetable Group Name',
-        help_text='Should be unique in this school',
+        help_text='Should be unique in this college',
     )
 
     class Meta:
@@ -19,7 +19,7 @@ class TimetableGroupForm(forms.ModelForm):
         fields = ['timetablegroupname']
 
     def __init__(self, *args, **kwargs):
-        self.currentschool = kwargs.pop('theschool')
+        self.currentcollege = kwargs.pop('thecollege')
         self.initialname = kwargs.pop('initialname')
         super(TimetableGroupForm, self).__init__(*args, **kwargs)
 
@@ -32,11 +32,11 @@ class TimetableGroupForm(forms.ModelForm):
         enteredname = cleaned_data.get("timetablegroupname")
         slugifiedname = slugify(enteredname)
 
-        # Get number of items matching stream name of current school
-        checkname = Timetablegroup.objects.filter(school__id=self.currentschool.id, slug=slugifiedname).count()
+        # Get number of items matching stream name of current college
+        checkname = Timetablegroup.objects.filter(college__id=self.currentcollege.id, slug=slugifiedname).count()
 
         # Check if the entered name matches the initial one
         if enteredname != self.initialname:
             if checkname > 0:
-                raise forms.ValidationError("The timetable group name should be unique in this school")
+                raise forms.ValidationError("The timetable group name should be unique in this college")
 

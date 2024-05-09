@@ -9,15 +9,15 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('school', '0001_initial'),
+        ('college', '0001_initial'),
         ('groups', '0001_initial'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='schoolgroups',
-            name='school',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='school.school'),
+            model_name='collegegroups',
+            name='college',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.college'),
         ),
         migrations.AddField(
             model_name='groupsubjectteachers',
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='groupsubjectteachers',
             name='teacher',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='school.teachers'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.teachers'),
         ),
         migrations.AddField(
             model_name='groupsubjectteachers',
@@ -37,12 +37,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='groupsubjects',
             name='group',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.schoolgroups'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.collegegroups'),
         ),
         migrations.AddField(
             model_name='groupsubjects',
             name='subject',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='school.subjects'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.subjects'),
         ),
         migrations.AddField(
             model_name='groupspecifiction',
@@ -52,26 +52,26 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='grouproutine',
             name='group',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.schoolgroups'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.collegegroups'),
         ),
         migrations.AddField(
             model_name='groupclasses',
             name='classteacher',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='school.teachers'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.teachers'),
         ),
         migrations.AddField(
             model_name='groupclasses',
             name='group',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.schoolgroups'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.collegegroups'),
         ),
         migrations.AddField(
             model_name='groupclasses',
             name='stream',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='school.streams'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.streams'),
         ),
         migrations.AddField(
             model_name='groupbreaks',
             name='group',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.schoolgroups'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.collegegroups'),
         ),
     ]

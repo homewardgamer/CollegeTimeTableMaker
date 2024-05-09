@@ -3,51 +3,51 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
-from school.models import School
-from school.models import Subjects
-from .models import GroupSpecifiction, Groupbreaks, Groupclasses, Grouproutine, Groupsubjects, Groupsubjectteachers, SchoolGroups
+from college.models import College
+from college.models import Subjects
+from .models import GroupSpecifiction, Groupbreaks, Groupclasses, Grouproutine, Groupsubjects, Groupsubjectteachers, CollegeGroups
 from .forms import GroupsForm, ClassForm, RoutineForm, BreaksForm, GroupSubjectsForm, LessonForm, GroupSpecifictionForm
 
-# View all Groups In Agiven School
+# View all Groups In Agiven College
 @login_required
 def groupdisplay(request, randomid):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
-    # Get the subjects of this school
-    schoolgroups = SchoolGroups.objects.filter(school__randomid=randomid)
-    return render(request, "frontend/school/groupsview.html", {"schoolgroups":schoolgroups, "theschool":theschool})
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
+    # Get the subjects of this college
+    collegegroups = CollegeGroups.objects.filter(college__randomid=randomid)
+    return render(request, "frontend/college/groupsview.html", {"collegegroups":collegegroups, "thecollege":thecollege})
 
-# Add a Group for a given school
+# Add a Group for a given college
 @login_required
 def groupadd(request, randomid):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Store title of page
     thelabel = 'Add A Group'
     # initialize the form
-    groupform = GroupsForm(theschool=theschool, thestate='Add', groupname=None)
+    groupform = GroupsForm(thecollege=thecollege, thestate='Add', groupname=None)
 
     # Set form action
     groupform.helper.form_action = reverse('addgroup', kwargs={"randomid":randomid})
 
     if request.method == 'POST':
-        groupform = GroupsForm(request.POST,theschool=theschool, thestate='Add', groupname=None)
+        groupform = GroupsForm(request.POST,thecollege=thecollege, thestate='Add', groupname=None)
         if groupform.is_valid():
             # Save the group
             thegroup = groupform.save(commit=False)
-            thegroup.school = theschool
+            thegroup.college = thecollege
             thegroup.save()
             messages.success(request, "You successfully added a group")
             gotourl = reverse("groupview", kwargs={"randomid":randomid})
             return redirect(gotourl)
-    return render(request, "frontend/school/schoolforms.html", {"form":groupform, "theschool":theschool,"thelabel":thelabel})
+    return render(request, "frontend/college/collegeforms.html", {"form":groupform, "thecollege":thecollege,"thelabel":thelabel})
 
 # Edit a particular group
 def groupedit(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Edit A Group'
     # initialize the form
@@ -55,13 +55,13 @@ def groupedit(request, randomid, groupslug):
     update_initial = {}
     update_initial["groupname"] = thegroup.groupname
     update_initial["lessonduration"] = thegroup.lessonduration
-    groupform = GroupsForm(theschool=theschool, thestate='Edit', groupname=thegroup.groupname, data=update_initial)
+    groupform = GroupsForm(thecollege=thecollege, thestate='Edit', groupname=thegroup.groupname, data=update_initial)
 
     # Set form action
     groupform.helper.form_action = reverse('editgroup', kwargs={"randomid":randomid, "groupslug":groupslug})
 
     if request.method == 'POST':
-        groupform = GroupsForm(request.POST, theschool=theschool, thestate='Edit', groupname=thegroup.groupname)
+        groupform = GroupsForm(request.POST, thecollege=thecollege, thestate='Edit', groupname=thegroup.groupname)
         if groupform.is_valid():
             # Save the group changes
             thegroup.groupname = groupform.cleaned_data['groupname']
@@ -69,15 +69,15 @@ def groupedit(request, randomid, groupslug):
             messages.success(request, "You successfully edited a group")
             gotourl = reverse("groupview", kwargs={"randomid":randomid})
             return redirect(gotourl)
-    return render(request, "frontend/school/schoolforms.html", {"form":groupform, "theschool":theschool,"thelabel":thelabel})
+    return render(request, "frontend/college/collegeforms.html", {"form":groupform, "thecollege":thecollege,"thelabel":thelabel})
 
 # Delete a group
 @login_required
 def groupdelete(request, randomid, groupslug):
-    # Check if the school exists
-    get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     thegroup.delete()
     gotourl = reverse("groupview", kwargs={"randomid":randomid})
     messages.success(request, "You successfully deleted a group")
@@ -86,10 +86,10 @@ def groupdelete(request, randomid, groupslug):
 # View a particular group
 @login_required
 def groupview(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Group details( A max of 3 each)
     classes = Groupclasses.objects.filter(group__id=thegroup.id)[:3]
     breaks = Groupbreaks.objects.filter(group__id=thegroup.id)[:3]
@@ -98,36 +98,36 @@ def groupview(request, randomid, groupslug):
     lessons = Groupsubjectteachers.objects.filter(groupsubjects__group__id=thegroup.id)[:3]
     specifications = GroupSpecifiction.objects.filter(groupsubjectteachers__groupsubjects__group__id=thegroup.id)[:3]
     
-    return render(request, "frontend/groups/groupsdisplay.html", {"theschool":theschool, "thegroup":thegroup, "classes":classes,"breaks":breaks,"routines":routine,"subjects":subjects,"lessons":lessons, "specifications":specifications})
+    return render(request, "frontend/groups/groupsdisplay.html", {"thecollege":thecollege, "thegroup":thegroup, "classes":classes,"breaks":breaks,"routines":routine,"subjects":subjects,"lessons":lessons, "specifications":specifications})
 
 # Show all classes of a particular group
 @login_required
 def classview(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Show the classes
     classes = Groupclasses.objects.filter(group__id=thegroup.id)
-    return render(request, "frontend/groups/classesview.html", {"theschool":theschool, "thegroup":thegroup, "classes":classes})
+    return render(request, "frontend/groups/classesview.html", {"thecollege":thecollege, "thegroup":thegroup, "classes":classes})
 
 # Add a class
 @login_required
 def classadd(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Add A Class'
     # initialize the form
-    classform = ClassForm(theschool=theschool, thegroup=thegroup, thestate='Add', classname=None, theclassteacher=None, stream=None)
+    classform = ClassForm(thecollege=thecollege, thegroup=thegroup, thestate='Add', classname=None, theclassteacher=None, stream=None)
 
     # Set form action
     classform.helper.form_action = reverse('addclass', kwargs={"randomid":randomid, "groupslug":groupslug})
 
     if request.method == 'POST':
-        classform = ClassForm(request.POST, theschool=theschool, thegroup=thegroup, thestate='Add', classname=None, theclassteacher=None, stream=None)
+        classform = ClassForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Add', classname=None, theclassteacher=None, stream=None)
         if classform.is_valid():
             # Save the class
             theclass = classform.save(commit=False)
@@ -136,15 +136,15 @@ def classadd(request, randomid, groupslug):
             messages.success(request, "You successfully added a class")
             gottourl = reverse("classview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":classform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":classform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Edit a class
 @login_required
 def classedit(request, randomid, groupslug, classslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Edit A Class'
     # Check if a class exists
@@ -155,13 +155,13 @@ def classedit(request, randomid, groupslug, classslug):
     update_initial['stream'] = theclass.stream
     update_initial['classname'] = theclass.classname
     update_initial['classteacher'] = theclass.classteacher
-    classform = ClassForm(theschool=theschool, thegroup=thegroup, thestate='Edit', classname=theclass.classname, theclassteacher=theclass.classteacher, stream=theclass.stream.streamname, data=update_initial)
+    classform = ClassForm(thecollege=thecollege, thegroup=thegroup, thestate='Edit', classname=theclass.classname, theclassteacher=theclass.classteacher, stream=theclass.stream.streamname, data=update_initial)
 
     # Set form action
     classform.helper.form_action = reverse('editclass', kwargs={"randomid":randomid, "groupslug":groupslug, "classslug":classslug})
 
     if request.method == 'POST':
-        classform = ClassForm(request.POST, theschool=theschool, thegroup=thegroup, thestate='Edit', classname=theclass.classname, theclassteacher=theclass.classteacher, stream=theclass.stream.streamname)
+        classform = ClassForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Edit', classname=theclass.classname, theclassteacher=theclass.classteacher, stream=theclass.stream.streamname)
         if classform.is_valid():
             # Save the class
             theclass.classname = classform.cleaned_data['classname']
@@ -171,15 +171,15 @@ def classedit(request, randomid, groupslug, classslug):
             messages.success(request, "You successfully edited a class")
             gottourl = reverse("classview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":classform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":classform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Delete a class
 @login_required
 def classdelete(request, randomid, groupslug, classslug):
-    # Check if the school exists
-    get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Check if a class exists
     theclass = get_object_or_404(Groupclasses, group__id=thegroup.id, slug=classslug)
     if theclass.ifcandelete() == True:
@@ -193,21 +193,21 @@ def classdelete(request, randomid, groupslug, classslug):
 # Show all routine of a group
 @login_required
 def routineview(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Show the routines
     routine = Grouproutine.objects.filter(group__id=thegroup.id)
-    return render(request, "frontend/groups/routineview.html", {"theschool":theschool, "thegroup":thegroup, "routines":routine})
+    return render(request, "frontend/groups/routineview.html", {"thecollege":thecollege, "thegroup":thegroup, "routines":routine})
 
 # Add a routine
 @login_required
 def routineadd(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Add A Routine'
     # initialize the form
@@ -226,15 +226,15 @@ def routineadd(request, randomid, groupslug):
             messages.success(request, "You successfully added a routine")
             gottourl = reverse("routineview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":routineform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":routineform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Edit a routine
 @login_required
 def routineedit(request, randomid, groupslug, routineid):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Edit A Routine'
     # Check if a routine exists
@@ -262,15 +262,15 @@ def routineedit(request, randomid, groupslug, routineid):
             messages.success(request, "You successfully edited a routine")
             gottourl = reverse("routineview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":routineform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":routineform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Delete a routine
 @login_required
 def routinedelete(request, randomid, groupslug, routineid):
-    # Check if the school exists
-    get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Check if a routine exists
     theroutine = get_object_or_404(Grouproutine, id=routineid)
     theroutine.delete()
@@ -281,21 +281,21 @@ def routinedelete(request, randomid, groupslug, routineid):
 # Show all breaks of a group
 @login_required
 def breakview(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Show the breaks
     breaks = Groupbreaks.objects.filter(group__id=thegroup.id)
-    return render(request, "frontend/groups/breaksview.html", {"theschool":theschool, "thegroup":thegroup, "breaks":breaks})
+    return render(request, "frontend/groups/breaksview.html", {"thecollege":thecollege, "thegroup":thegroup, "breaks":breaks})
 
 # Add a routine
 @login_required
 def breakadd(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Add A Break'
     # initialize the form
@@ -314,15 +314,15 @@ def breakadd(request, randomid, groupslug):
             messages.success(request, "You successfully added a break")
             gottourl = reverse("breakview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":breakform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":breakform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Edit a routine
 @login_required
 def breakedit(request, randomid, groupslug, breakid):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Edit A Break'
     # Check if a break exists
@@ -352,15 +352,15 @@ def breakedit(request, randomid, groupslug, breakid):
             messages.success(request, "You successfully edited a break")
             gottourl = reverse("breakview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":breakform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":breakform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Delete a break
 @login_required
 def breakdelete(request, randomid, groupslug, breakid):
-    # Check if the school exists
-    get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Check if a break exists
     thebreak = get_object_or_404(Groupbreaks, group__id=thegroup.id, id=breakid)
     thebreak.delete()
@@ -371,31 +371,31 @@ def breakdelete(request, randomid, groupslug, breakid):
 # Show all subjects by group
 @login_required
 def groupsubjectsiew(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Show the subjects
     subjects = Groupsubjects.objects.filter(group__id=thegroup.id)
-    return render(request, "frontend/groups/subjectsview.html", {"theschool":theschool, "thegroup":thegroup, "subjects":subjects})
+    return render(request, "frontend/groups/subjectsview.html", {"thecollege":thecollege, "thegroup":thegroup, "subjects":subjects})
 
 # Add a subject
 @login_required
 def groupsubjectsadd(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Add A Subject'
     # initialize the form
-    subjectsform = GroupSubjectsForm(theschool=theschool, thegroup=thegroup, thestate='Add',thesubject=None)
+    subjectsform = GroupSubjectsForm(thecollege=thecollege, thegroup=thegroup, thestate='Add',thesubject=None)
 
     # Set form action
     subjectsform.helper.form_action = reverse('addgroupsubject', kwargs={"randomid":randomid, "groupslug":groupslug})
 
     if request.method == 'POST':
-        subjectsform = GroupSubjectsForm(request.POST, theschool=theschool, thegroup=thegroup, thestate='Add',thesubject=None)
+        subjectsform = GroupSubjectsForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Add',thesubject=None)
         if subjectsform.is_valid():
             # Save the subject
             thegrpsubject = subjectsform.save(commit=False)
@@ -404,15 +404,15 @@ def groupsubjectsadd(request, randomid, groupslug):
             messages.success(request, "You successfully added a subject")
             gottourl = reverse("groupsubjectsview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":subjectsform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":subjectsform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Edit a subject
 @login_required
 def groupsubjectsedit(request, randomid, groupslug, subjectslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Edit A Subject'
     # Check if a subject exists
@@ -422,13 +422,13 @@ def groupsubjectsedit(request, randomid, groupslug, subjectslug):
     update_initial = {}
     update_initial['subject'] = thesubject.subject
     # initialize the form
-    subjectsform = GroupSubjectsForm(theschool=theschool, thegroup=thegroup, thestate='Edit',thesubject=thesubject.subject, data=update_initial)
+    subjectsform = GroupSubjectsForm(thecollege=thecollege, thegroup=thegroup, thestate='Edit',thesubject=thesubject.subject, data=update_initial)
 
     # Set form action
     subjectsform.helper.form_action = reverse('editgroupsubject', kwargs={"randomid":randomid, "groupslug":groupslug, "subjectslug":subjectslug})
 
     if request.method == 'POST':
-        subjectsform = GroupSubjectsForm(request.POST,theschool=theschool, thegroup=thegroup, thestate='Edit',thesubject=thesubject.subject)
+        subjectsform = GroupSubjectsForm(request.POST,thecollege=thecollege, thegroup=thegroup, thestate='Edit',thesubject=thesubject.subject)
         if subjectsform.is_valid():
             # Save the subject
             thesubject.subject = subjectsform.cleaned_data['subject']
@@ -436,15 +436,15 @@ def groupsubjectsedit(request, randomid, groupslug, subjectslug):
             messages.success(request, "You successfully edited a subject")
             gottourl = reverse("groupsubjectsview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":subjectsform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":subjectsform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Delete a group subject
 @login_required
 def groupsubjectsdelete(request, randomid, groupslug, subjectslug):
-    # Check if the school exists
-    get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Check if a group subject exists
     thesubject = get_object_or_404(Groupsubjects, group__id=thegroup.id, subject__slug=subjectslug)
     thesubject.delete()
@@ -455,46 +455,46 @@ def groupsubjectsdelete(request, randomid, groupslug, subjectslug):
 # Show all lessons by group
 @login_required
 def lessonsview(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Show the lessons
     lessons = Groupsubjectteachers.objects.filter(groupsubjects__group__id=thegroup.id)
-    return render(request, "frontend/groups/lessonsview.html", {"theschool":theschool, "thegroup":thegroup, "lessons":lessons})
+    return render(request, "frontend/groups/lessonsview.html", {"thecollege":thecollege, "thegroup":thegroup, "lessons":lessons})
 
 # Add a lessons
 @login_required
 def lessonsadd(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Add A Lesson'
     # initialize the form
-    lessonsform = LessonForm(theschool=theschool, thegroup=thegroup, thestate='Add',thelesson=None)
+    lessonsform = LessonForm(thecollege=thecollege, thegroup=thegroup, thestate='Add',thelesson=None)
 
     # Set form action
     lessonsform.helper.form_action = reverse('addlesson', kwargs={"randomid":randomid, "groupslug":groupslug})
 
     if request.method == 'POST':
-        lessonsform = LessonForm(request.POST, theschool=theschool, thegroup=thegroup, thestate='Add',thelesson=None)
+        lessonsform = LessonForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Add',thelesson=None)
         if lessonsform.is_valid():
             # Save the lesson
             lessonsform.save()
             messages.success(request, "You successfully added a lesson")
             gottourl = reverse("lessonsview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":lessonsform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":lessonsform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Edit a lessons
 @login_required
 def lessonsedit(request, randomid, groupslug, lessonid):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Edit A Lesson'
     # Check if a lesson exists
@@ -507,13 +507,13 @@ def lessonsedit(request, randomid, groupslug, lessonid):
     update_initial['teacher'] = thelesson.teacher
     update_initial['nooflessonsperweek'] = thelesson.nooflessonsperweek
     # initialize the form
-    lessonsform = LessonForm(theschool=theschool, thegroup=thegroup, thestate='Edit',thelesson=thelesson, data=update_initial)
+    lessonsform = LessonForm(thecollege=thecollege, thegroup=thegroup, thestate='Edit',thelesson=thelesson, data=update_initial)
 
     # Set form action
     lessonsform.helper.form_action = reverse('editlesson', kwargs={"randomid":randomid, "groupslug":groupslug, "lessonid":lessonid})
 
     if request.method == 'POST':
-        lessonsform = LessonForm(request.POST, theschool=theschool, thegroup=thegroup, thestate='Edit',thelesson=thelesson)
+        lessonsform = LessonForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Edit',thelesson=thelesson)
         if lessonsform.is_valid():
             # Save the lesson
             thelesson.groupsubjects = lessonsform.cleaned_data['groupsubjects']
@@ -524,15 +524,15 @@ def lessonsedit(request, randomid, groupslug, lessonid):
             messages.success(request, "You successfully edited a lesson")
             gottourl = reverse("lessonsview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":lessonsform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":lessonsform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Delete a lesson
 @login_required
 def lessonsdelete(request, randomid, groupslug, lessonid):
-    # Check if the school exists
-    get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Check if a lesson exists
     thelesson = get_object_or_404(Groupsubjectteachers, id=lessonid)
     thelesson.delete()
@@ -543,21 +543,21 @@ def lessonsdelete(request, randomid, groupslug, lessonid):
 # Show all specifications by group
 @login_required
 def specificationsview(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Show the specifications
     specifications = GroupSpecifiction.objects.filter(groupsubjectteachers__groupsubjects__group__id=thegroup.id)
-    return render(request, "frontend/groups/specificationsview.html", {"theschool":theschool, "thegroup":thegroup, "specifications":specifications})
+    return render(request, "frontend/groups/specificationsview.html", {"thecollege":thecollege, "thegroup":thegroup, "specifications":specifications})
 
 # Add a specifications
 @login_required
 def specificationsadd(request, randomid, groupslug):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Add A Specification'
     # initialize the form
@@ -574,15 +574,15 @@ def specificationsadd(request, randomid, groupslug):
             messages.success(request, "You successfully added a specification")
             gottourl = reverse("specificationsview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":specificationsform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":specificationsform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Edit a Specification
 @login_required
 def specificationsedit(request, randomid, groupslug, specificid):
-    # Check if the school exists
-    theschool = get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    thecollege = get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    thegroup = get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Store title of page
     thelabel = 'Edit A Specification'
     # Check if a specification exists
@@ -612,15 +612,15 @@ def specificationsedit(request, randomid, groupslug, specificid):
             messages.success(request, "You successfully edited a specification")
             gottourl = reverse("specificationsview", kwargs={"randomid":randomid, "groupslug":groupslug})
             return redirect(gottourl)
-    return render(request, "frontend/groups/groupforms.html", {"form":specificationsform, "theschool":theschool,"thelabel":thelabel, "thegroup":thegroup})
+    return render(request, "frontend/groups/groupforms.html", {"form":specificationsform, "thecollege":thecollege,"thelabel":thelabel, "thegroup":thegroup})
 
 # Delete a specification
 @login_required
 def specificationsdelete(request, randomid, groupslug, specificid):
-    # Check if the school exists
-    get_object_or_404(School, randomid=randomid)
+    # Check if the college exists
+    get_object_or_404(College, randomid=randomid)
     # Check if the group exists
-    get_object_or_404(SchoolGroups, school__randomid=randomid, slug=groupslug)
+    get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Check if a lesson exists
     thespecification = get_object_or_404(GroupSpecifiction, id=specificid)
     thespecification.delete()

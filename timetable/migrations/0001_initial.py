@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('school', '0001_initial'),
+        ('college', '0001_initial'),
         ('groups', '0001_initial'),
     ]
 
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('timetablegroupname', models.CharField(max_length=20)),
                 ('slug', models.SlugField()),
                 ('status', models.CharField(choices=[('Active', 'Active'), ('Inactive', 'Inactive')], default='Inactive', max_length=50)),
-                ('school', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='school.school')),
+                ('college', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.college')),
             ],
             options={
                 'verbose_name': 'Timetable Group',
@@ -36,8 +36,8 @@ class Migration(migrations.Migration):
                 ('day', models.CharField(max_length=20)),
                 ('starttime', models.TimeField()),
                 ('endtime', models.TimeField()),
-                ('subject', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='school.subjects')),
-                ('teacher', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='school.teachers')),
+                ('subject', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.subjects')),
+                ('teacher', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.teachers')),
                 ('theclass', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.groupclasses')),
                 ('timetablegroup', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='timetable.timetablegroup')),
             ],

@@ -1,26 +1,26 @@
-{% extends "base/school.html" %}
+{% extends "base/college.html" %}
 
 {% block title %} Timetables {% endblock %}
 
-{% block schooldetails %}
-<a class="navbar-brand" href="{% url 'schoolview' randomid=theschool.randomid %}"><img src="{{ theschool.schoollogo.url }}" alt="{{ theschool.schoolname }}" height="50px"> | {{ theschool.schoolname }}</a>
+{% block collegedetails %}
+<a class="navbar-brand" href="{% url 'collegeview' randomid=thecollege.randomid %}"><img src="{{ thecollege.collegelogo.url }}" alt="{{ thecollege.collegename }}" height="50px"> | {{ thecollege.collegename }}</a>
 {% endblock %}
 
 {% block navigation %}
 <li class="nav-item">
-  <a class="nav-link" href="{% url 'groupview' randomid=theschool.randomid %}">Groups</a>
+  <a class="nav-link" href="{% url 'groupview' randomid=thecollege.randomid %}">Groups</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="{% url 'subjectview' randomid=theschool.randomid %}">Subjects</a>
+  <a class="nav-link" href="{% url 'subjectview' randomid=thecollege.randomid %}">Subjects</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="{% url 'streamview' randomid=theschool.randomid %}">Streams</a>
+  <a class="nav-link" href="{% url 'streamview' randomid=thecollege.randomid %}">Streams</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="{% url 'teacherview' randomid=theschool.randomid %}">Teachers</a>
+  <a class="nav-link" href="{% url 'teacherview' randomid=thecollege.randomid %}">Teachers</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'timetablesview' randomid=theschool.randomid %}">Timetables</a>
+    <a class="nav-link" href="{% url 'timetablesview' randomid=thecollege.randomid %}">Timetables</a>
 </li>
 {% endblock %}
 
@@ -34,8 +34,8 @@
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
         <h5 class="card-title">Class: {{ class.classname }} Stream: {{ class.stream.streamname }} Class Teacher: {{ class.classteacher.teachername }}</h5>
-      <a href="{% url 'onetimetable' randomid=theschool.randomid timetableid=thetimetable.id classlug=class.slug %}" class="card-link">View Timetable</a>
-      <a href="{% url 'pdftimetable' randomid=theschool.randomid timetableid=thetimetable.id classlug=class.slug %}" class="card-link">View Timetable (PDF Version)</a>
+      <a href="{% url 'onetimetable' randomid=thecollege.randomid timetableid=thetimetable.id classlug=class.slug %}" class="card-link">View Timetable</a>
+      <a href="{% url 'pdftimetable' randomid=thecollege.randomid timetableid=thetimetable.id classlug=class.slug %}" class="card-link">View Timetable (PDF Version)</a>
     </div>
 </div>
 {% endfor %}

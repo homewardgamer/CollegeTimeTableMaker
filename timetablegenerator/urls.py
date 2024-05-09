@@ -19,14 +19,14 @@ from django.urls import path, include
 from django.conf import settings  
 from django.conf.urls.static import static 
 
-from school.views import register, loginstuff, logoutuser
+from college.views import register, loginstuff, logoutuser
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('register', register, name="register"),
     path('login', loginstuff, name="login"),
     path('logout', logoutuser, name="logout"),
-    path('', include('school.urls')),
+    path('', include('college.urls')),
     path('', include('groups.urls')),
     path('', include('timetable.urls')),
 ]

@@ -1,0 +1,60 @@
+{% extends "base/college.html" %}
+
+{% block title %} Streams {% endblock %}
+
+{% block collegedetails %}
+<a class="navbar-brand" href="{% url 'collegeview' randomid=thecollege.randomid %}"><img src="{{ thecollege.collegelogo.url }}" alt="{{ thecollege.collegename }}" height="50px"> | {{ thecollege.collegename }}</a>
+{% endblock %}
+
+{% block navigation %}
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'groupview' randomid=thecollege.randomid %}">Groups</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'subjectview' randomid=thecollege.randomid %}">Subjects</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'streamview' randomid=thecollege.randomid %}">Streams</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'teacherview' randomid=thecollege.randomid %}">Teachers</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="{% url 'timetablesview' randomid=thecollege.randomid %}">Timetables</a>
+</li>
+{% endblock %}
+
+{% block content %}
+
+{% if streams|length > 0 %}
+<div class="card mt-2 mx-3" style="width: 95%;">
+    <div class="card-body">
+      <h5 class="card-title my_card_title">Streams</h5>
+    </div>
+  </div>
+{% for stream in streams %}
+<div class="card mt-2 mx-3" style="width: 95%;">
+    <div class="card-body">
+      <h5 class="card-title">{{ stream.streamname }}</h5>
+      <a href="{% url 'editstream' randomid=thecollege.randomid streamslug=stream.slug %}" class="card-link">Edit Stream</a>
+      {% if stream.ifcandelete is True %}<a href="{% url 'deletestreams' randomid=thecollege.randomid streamslug=stream.slug %}" class="card-link">Delete stream (This is not reversible)</a>{% else %}<a href="#" class="card-link disabled">To delete this stream, delete the timetable using the classes that use this stream.</a>{% endif %}
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="card mt-2 mx-3" style="width: 95%;">
+  <div class="card-body">
+    <h5 class="card-title">Sorry, you have no stream currently.</h5>
+  </div>
+</div>
+{% endif %}
+<div class="container mb-3">
+    <div class="row">
+      <div class="col-md-12">
+        <button class="btn mt-2 mx-2"  style="width: 95%;">
+          <a href="{% url 'addstream' randomid=thecollege.randomid %}">Add New Stream</a>
+        </button>
+      </div>
+    </div>
+
+{% endblock %}

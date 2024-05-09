@@ -1,11 +1,11 @@
 from django.db import models
-from school.models import School, Subjects, Teachers, Streams
+from college.models import College, Subjects, Teachers, Streams
 from django.utils.text import slugify
 from django.conf import settings
 
-# Store different groups by a school
-class SchoolGroups(models.Model):
-    school = models.ForeignKey(School, on_delete=models.CASCADE)
+# Store different groups by a college
+class CollegeGroups(models.Model):
+    college = models.ForeignKey(College, on_delete=models.CASCADE)
     groupname = models.CharField(max_length=100)
     slug = models.SlugField()
     lessonduration = models.PositiveIntegerField()
@@ -15,16 +15,16 @@ class SchoolGroups(models.Model):
         verbose_name_plural = ("Groups")
 
     def __str__(self):
-        return f"{self.groupname} of the school {self.school.schoolname}"
+        return f"{self.groupname} of the college {self.college.collegename}"
 
     # Slugify the groupname as you save
     def save(self, *args, **kwargs):
         self.slug = slugify(self.groupname)
-        super(SchoolGroups, self).save(*args, **kwargs)
+        super(CollegeGroups, self).save(*args, **kwargs)
 
 # Store routine for a given group
 class Grouproutine(models.Model):
-    group = models.ForeignKey(SchoolGroups, on_delete=models.CASCADE)
+    group = models.ForeignKey(CollegeGroups, on_delete=models.CASCADE)
     day = models.CharField(max_length=20, choices=settings.DAYS)
     starttime = models.TimeField()
     endtime = models.TimeField()
@@ -38,7 +38,7 @@ class Grouproutine(models.Model):
 
 # Store breaks for a  given group
 class Groupbreaks(models.Model):
-    group = models.ForeignKey(SchoolGroups, on_delete=models.CASCADE)
+    group = models.ForeignKey(CollegeGroups, on_delete=models.CASCADE)
     breakname = models.CharField(max_length=100)
     slug = models.SlugField()
     day = models.CharField(max_length=20, choices=settings.DAYS)
@@ -59,7 +59,7 @@ class Groupbreaks(models.Model):
 
 # Store subjects in a given group
 class Groupsubjects(models.Model):
-    group = models.ForeignKey(SchoolGroups, on_delete=models.CASCADE)
+    group = models.ForeignKey(CollegeGroups, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subjects, on_delete=models.CASCADE)
 
     class Meta:
@@ -71,7 +71,7 @@ class Groupsubjects(models.Model):
 
 # Store classes in a given group. Has a method to check if an object can be deleted.
 class Groupclasses(models.Model):
-    group = models.ForeignKey(SchoolGroups, on_delete=models.CASCADE)
+    group = models.ForeignKey(CollegeGroups, on_delete=models.CASCADE)
     stream = models.ForeignKey(Streams, on_delete=models.CASCADE)
     classteacher = models.ForeignKey(Teachers, on_delete=models.CASCADE)
     classname = models.CharField(max_length=100)

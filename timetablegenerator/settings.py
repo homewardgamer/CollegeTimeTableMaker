@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'colorfield',
     'groups',
-    'school',
+    'college',
     'timetable',
     'frontend',
 ]
@@ -135,7 +135,7 @@ STATICFILES_DIR =  BASE_DIR / 'static'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # The User Model TO Use
-AUTH_USER_MODEL = 'school.User'
+AUTH_USER_MODEL = 'college.User'
 
 # Base url to serve media files  
 MEDIA_URL = '/media/'  
