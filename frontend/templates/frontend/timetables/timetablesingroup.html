@@ -33,7 +33,7 @@
 {% for class in allclasses %}
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
-        <h5 class="card-title">Class: {{ class.classname }} Stream: {{ class.stream.streamname }} Class Faculty: {{ class.classfaculty.facultyname }}</h5>
+        <h5 class="card-title">Class: {{ class.classname }} Stream: {{ class.stream.streamname }}</h5>
       <a href="{% url 'onetimetable' randomid=thecollege.randomid timetableid=thetimetable.id classlug=class.slug %}" class="card-link">View Timetable</a>
       <a href="{% url 'pdftimetable' randomid=thecollege.randomid timetableid=thetimetable.id classlug=class.slug %}" class="card-link">View Timetable (PDF Version)</a>
     </div>

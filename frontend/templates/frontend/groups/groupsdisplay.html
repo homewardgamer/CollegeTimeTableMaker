@@ -37,7 +37,7 @@
 {% for class in classes %}
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
-      <h5 class="card-title">Class: {{ class.classname }} Stream: {{ class.stream.streamname }} Class Faculty: {{ class.classfaculty.facultyname }}</h5>
+      <h5 class="card-title">Class: {{ class.classname }} Stream: {{ class.stream.streamname }}</h5>
       <a href="{% url 'editclass' randomid=thecollege.randomid groupslug=thegroup.slug classslug=class.slug %}" class="card-link">Edit Class</a>
       {% if class.ifcandelete is True %}<a href="{% url 'deleteclass' randomid=thecollege.randomid groupslug=thegroup.slug classslug=class.slug %}" class="card-link">Delete Class (This is not reversible)</a>
       {% else %}<a href="#" class="card-link disabled">To delete this class, delete the timetable using this classes.</a>{% endif %}

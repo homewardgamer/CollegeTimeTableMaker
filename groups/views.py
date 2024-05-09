@@ -121,13 +121,13 @@ def classadd(request, randomid, groupslug):
     # Store title of page
     thelabel = 'Add A Class'
     # initialize the form
-    classform = ClassForm(thecollege=thecollege, thegroup=thegroup, thestate='Add', classname=None, theclassfaculty=None, stream=None)
+    classform = ClassForm(thecollege=thecollege, thegroup=thegroup, thestate='Add', classname=None, stream=None)
 
     # Set form action
     classform.helper.form_action = reverse('addclass', kwargs={"randomid":randomid, "groupslug":groupslug})
 
     if request.method == 'POST':
-        classform = ClassForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Add', classname=None, theclassfaculty=None, stream=None)
+        classform = ClassForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Add', classname=None, stream=None)
         if classform.is_valid():
             # Save the class
             theclass = classform.save(commit=False)
@@ -154,19 +154,19 @@ def classedit(request, randomid, groupslug, classslug):
     update_initial = {}
     update_initial['stream'] = theclass.stream
     update_initial['classname'] = theclass.classname
-    update_initial['classfaculty'] = theclass.classfaculty
-    classform = ClassForm(thecollege=thecollege, thegroup=thegroup, thestate='Edit', classname=theclass.classname, theclassfaculty=theclass.classfaculty, stream=theclass.stream.streamname, data=update_initial)
+    #update_initial['classfaculty'] = theclass.classfaculty
+    classform = ClassForm(thecollege=thecollege, thegroup=thegroup, thestate='Edit', classname=theclass.classname, stream=theclass.stream.streamname, data=update_initial)
 
     # Set form action
     classform.helper.form_action = reverse('editclass', kwargs={"randomid":randomid, "groupslug":groupslug, "classslug":classslug})
 
     if request.method == 'POST':
-        classform = ClassForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Edit', classname=theclass.classname, theclassfaculty=theclass.classfaculty, stream=theclass.stream.streamname)
+        classform = ClassForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Edit', classname=theclass.classname, stream=theclass.stream.streamname)
         if classform.is_valid():
             # Save the class
             theclass.classname = classform.cleaned_data['classname']
             theclass.stream = classform.cleaned_data['stream']
-            theclass.classfaculty = classform.cleaned_data['classfaculty']
+            #theclass.classfaculty = classform.cleaned_data['classfaculty']
             theclass.save()
             messages.success(request, "You successfully edited a class")
             gottourl = reverse("classview", kwargs={"randomid":randomid, "groupslug":groupslug})

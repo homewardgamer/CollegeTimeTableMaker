@@ -54,11 +54,11 @@ class Migration(migrations.Migration):
             name='group',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.collegegroups'),
         ),
-        migrations.AddField(
-            model_name='groupclasses',
-            name='classfaculty',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.faculties'),
-        ),
+        #migrations.AddField(
+        #    model_name='groupclasses',
+        #    name='classfaculty',
+        #    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.faculties'),
+        #),
         migrations.AddField(
             model_name='groupclasses',
             name='group',

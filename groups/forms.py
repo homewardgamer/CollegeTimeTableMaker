@@ -65,26 +65,26 @@ class ClassForm(forms.ModelForm):
 
     class Meta:
         model = Groupclasses
-        fields = ['stream', 'classfaculty', 'classname']
+        fields = ['stream', 'classname']
 
     def __init__(self, *args, **kwargs):
         self.currentcollege = kwargs.pop('thecollege')
         self.currentgroup = kwargs.pop('thegroup')
         self.currentstate = kwargs.pop('thestate')
         self.initialclassname = kwargs.pop('classname')
-        self.initialclassfaculty = kwargs.pop('theclassfaculty')
+        #self.initialclassfaculty = kwargs.pop('theclassfaculty')
         self.initialstream = kwargs.pop('stream')
 
 
         super(ClassForm, self).__init__(*args, **kwargs)
 
         # Initialize faculty
-        self.fields['classfaculty'] = forms.ModelChoiceField(
-                required=True,
-                label='Choose your class faculty',
-                help_text='A class faculty is unique per class',
-                queryset=Faculties.objects.filter(college__id=self.currentcollege.id),
-            )
+        #self.fields['classfaculty'] = forms.ModelChoiceField(
+        #        required=True,
+        #        label='Choose your class faculty',
+        #        help_text='A class faculty is unique per class',
+        #        queryset=Faculties.objects.filter(college__id=self.currentcollege.id),
+        #    )
         
         # Initialize streams
         self.fields['stream'] = forms.ModelChoiceField(
@@ -102,14 +102,14 @@ class ClassForm(forms.ModelForm):
         cleaned_data = super(ClassForm, self).clean()
         enteredclassname = cleaned_data.get("classname")
         enteredstream = cleaned_data.get("stream")
-        enteredfaculty = cleaned_data.get("classfaculty")
+        #enteredfaculty = cleaned_data.get("classfaculty")
         slugifiedclass = slugify(enteredclassname + enteredstream.streamname)
 
         # Get number of items matching class name and stream name of current group
         checksclass = Groupclasses.objects.filter(group__id=self.currentgroup.id, slug=slugifiedclass).count()
 
         # Get classes with this faculty
-        checkfaculty = Groupclasses.objects.filter(classfaculty=enteredfaculty).count()
+        #checkfaculty = Groupclasses.objects.filter(classfaculty=enteredfaculty).count()
 
         # In case one is adding a class
         if self.currentstate == 'Add':
@@ -117,8 +117,8 @@ class ClassForm(forms.ModelForm):
                 raise forms.ValidationError("The class name with stream name should be unique")
 
             # If class where the entered faculty is already a class faculty
-            if checkfaculty > 0:
-                raise forms.ValidationError("The chosen faculty is a faculty in a different class.")
+            #if checkfaculty > 0:
+            #    raise forms.ValidationError("The chosen faculty is a faculty in a different class.")
         # In case one is editing a group
         else:
             # Check if the entered name and stream matches the initial ones
@@ -126,10 +126,10 @@ class ClassForm(forms.ModelForm):
                 if checksclass > 0:
                     raise forms.ValidationError("The class name with stream name should be unique")
 
-            if (self.initialclassfaculty != enteredfaculty):
-                # If class where the entered faculty is already a class faculty
-                if checkfaculty > 0:
-                    raise forms.ValidationError("The chosen faculty is a faculty in a different class.")
+            #if (self.initialclassfaculty != enteredfaculty):
+            #    # If class where the entered faculty is already a class faculty
+            #    if checkfaculty > 0:
+            #        raise forms.ValidationError("The chosen faculty is a faculty in a different class.")
 
 # Form for adding or editing Grouproutine model. Ensure the day entered is unique per group. Ensure the end time entered is greater than the start time entered.
 class RoutineForm(forms.ModelForm):

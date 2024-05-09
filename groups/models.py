@@ -73,7 +73,7 @@ class Groupsubjects(models.Model):
 class Groupclasses(models.Model):
     group = models.ForeignKey(CollegeGroups, on_delete=models.CASCADE)
     stream = models.ForeignKey(Streams, on_delete=models.CASCADE)
-    classfaculty = models.ForeignKey(Faculties, on_delete=models.CASCADE)
+    #classfaculty = models.ForeignKey(Faculties, on_delete=models.CASCADE)
     classname = models.CharField(max_length=100)
     slug = models.SlugField()
 
