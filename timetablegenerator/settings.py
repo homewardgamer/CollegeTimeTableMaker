@@ -145,13 +145,13 @@ MEDIA_ROOT = BASE_DIR / 'media/'
 
 # Stores days
 DAYS = (
-    ('Sunday', 'Sunday'),
     ('Monday', 'Monday'),
     ('Tuesday', 'Tuesday'),
     ('Wednesday', 'Wednesday'),
     ('Thursday', 'Thursday'),
     ('Friday', 'Friday'),
     ('Saturday', 'Saturday'),
+    ('Sunday', 'Sunday'),
 )
 
 # Set template pack to use for crispy forms
@@ -163,9 +163,9 @@ LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'
 
 # Store default value for a teacher's routine since it might be tiring to type manually values for all teachers
-DEFAULT_TEACHER_START_TIME = '08:00'
-DEFAULT_TEACHER_END_TIME = '16:00'
+DEFAULT_TEACHER_START_TIME = '09:00'
+DEFAULT_TEACHER_END_TIME = '19:00'
 
 # Store default value for start time and end time of rouine of a group
-DEFAULT_ROUTINE_START_TIME = '08:00'
-DEFAULT_ROUTINE_END_TIME = '14:30'
+DEFAULT_ROUTINE_START_TIME = '09:00'
+DEFAULT_ROUTINE_END_TIME = '19:00'
