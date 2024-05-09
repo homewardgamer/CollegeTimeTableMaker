@@ -162,9 +162,9 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'
 
-# Store default value for a teacher's routine since it might be tiring to type manually values for all teachers
-DEFAULT_TEACHER_START_TIME = '09:00'
-DEFAULT_TEACHER_END_TIME = '19:00'
+# Store default value for a faculty's routine since it might be tiring to type manually values for all faculties
+DEFAULT_FACULTY_START_TIME = '09:00'
+DEFAULT_FACULTY_END_TIME = '19:00'
 
 # Store default value for start time and end time of rouine of a group
 DEFAULT_ROUTINE_START_TIME = '09:00'

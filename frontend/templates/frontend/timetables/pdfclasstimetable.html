@@ -27,7 +27,7 @@
 	<div style="width: 95%;">
     <div class="card-body">
       <h5 class="my_card_title">Timetable</h5>
-      <h5 class="my_card_title">Class: {{ theclass.classname }} Stream: {{ theclass.stream.streamname }} Class Teacher: {{ theclass.classteacher.teachername }}</h5>
+      <h5 class="my_card_title">Class: {{ theclass.classname }} Stream: {{ theclass.stream.streamname }} Class Faculty: {{ theclass.classfaculty.facultyname }}</h5>
     </div>
 </div>
 <div class="container-fluid">
@@ -50,7 +50,7 @@
         <td style="background-color: {{ b.subject.color }}">
             <div class="text-center">
                 <p>{{ b.subject.subjectname }}</p>
-                <p>{{ b.teacher.teachername }}</p>
+                <p>{{ b.faculty.facultyname }}</p>
             </div>
         </td>
         {% endif %}

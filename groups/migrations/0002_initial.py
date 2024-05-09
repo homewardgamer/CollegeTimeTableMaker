@@ -20,17 +20,17 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.college'),
         ),
         migrations.AddField(
-            model_name='groupsubjectteachers',
+            model_name='groupsubjectfaculties',
             name='groupsubjects',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.groupsubjects'),
         ),
         migrations.AddField(
-            model_name='groupsubjectteachers',
-            name='teacher',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.teachers'),
+            model_name='groupsubjectfaculties',
+            name='faculty',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.faculties'),
         ),
         migrations.AddField(
-            model_name='groupsubjectteachers',
+            model_name='groupsubjectfaculties',
             name='theclass',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.groupclasses'),
         ),
@@ -46,8 +46,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='groupspecifiction',
-            name='groupsubjectteachers',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.groupsubjectteachers'),
+            name='groupsubjectfaculties',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.groupsubjectfaculties'),
         ),
         migrations.AddField(
             model_name='grouproutine',
@@ -56,8 +56,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='groupclasses',
-            name='classteacher',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.teachers'),
+            name='classfaculty',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.faculties'),
         ),
         migrations.AddField(
             model_name='groupclasses',

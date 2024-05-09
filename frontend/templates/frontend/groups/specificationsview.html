@@ -39,7 +39,7 @@
 {% for specification in specifications %}
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
-        <h5 class="card-title">The Lesson: {{ specification.groupsubjectteachers }}</h5>
+        <h5 class="card-title">The Lesson: {{ specification.groupsubjectfaculties }}</h5>
       <h5 class="card-title">Day: {{ specification.day }} Start time: {{ specification.starttime }} End time: {{ specification.endtime }}</h5>
       <a href="{% url 'editspecification' randomid=thecollege.randomid groupslug=thegroup.slug specificid=specification.id %}" class="card-link">Edit Specification</a>
       <a href="{% url 'deletespecification' randomid=thecollege.randomid groupslug=thegroup.slug specificid=specification.id %}" class="card-link">Delete Specification (This is not reversible)</a>

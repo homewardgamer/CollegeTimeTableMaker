@@ -7,14 +7,14 @@ admin.site.register(College)
 
 admin.site.register(Subjects)
 
-class TeacherRoutineInline(admin.StackedInline):
-    model = TeachersRoutine
+class FacultyRoutineInline(admin.StackedInline):
+    model = FacultiesRoutine
     extra = 0
 
-class TeachersAdmin(admin.ModelAdmin):
-    inlines = [TeacherRoutineInline,]
+class FacultiesAdmin(admin.ModelAdmin):
+    inlines = [FacultyRoutineInline,]
 
-admin.site.register(Teachers, TeachersAdmin)
+admin.site.register(Faculties, FacultiesAdmin)
 
 class StreamsAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug":("streamname",)}

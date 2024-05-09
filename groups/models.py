@@ -1,5 +1,5 @@
 from django.db import models
-from college.models import College, Subjects, Teachers, Streams
+from college.models import College, Subjects, Faculties, Streams
 from django.utils.text import slugify
 from django.conf import settings
 
@@ -73,7 +73,7 @@ class Groupsubjects(models.Model):
 class Groupclasses(models.Model):
     group = models.ForeignKey(CollegeGroups, on_delete=models.CASCADE)
     stream = models.ForeignKey(Streams, on_delete=models.CASCADE)
-    classteacher = models.ForeignKey(Teachers, on_delete=models.CASCADE)
+    classfaculty = models.ForeignKey(Faculties, on_delete=models.CASCADE)
     classname = models.CharField(max_length=100)
     slug = models.SlugField()
 
@@ -101,23 +101,23 @@ class Groupclasses(models.Model):
         else:
             return True
 
-# Store teacher, class and subject relating to a lesson plan for creation of a Timetable
-class Groupsubjectteachers(models.Model):
+# Store faculty, class and subject relating to a lesson plan for creation of a Timetable
+class Groupsubjectfaculties(models.Model):
     groupsubjects = models.ForeignKey(Groupsubjects, on_delete=models.CASCADE)
     theclass = models.ForeignKey(Groupclasses, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(Teachers, on_delete=models.CASCADE)
+    faculty = models.ForeignKey(Faculties, on_delete=models.CASCADE)
     nooflessonsperweek = models.PositiveIntegerField()
 
     class Meta:
-        verbose_name = ("Group subject teacher")
-        verbose_name_plural = ("Group subject teachers")
+        verbose_name = ("Group subject faculty")
+        verbose_name_plural = ("Group subject faculties")
 
     def __str__(self):
-        return f"Subject: {self.groupsubjects.subject.subjectname} - Class: {self.theclass.classname} - Stream: {self.theclass.stream.streamname} Teacher: {self.teacher.teachername}"
+        return f"Subject: {self.groupsubjects.subject.subjectname} - Class: {self.theclass.classname} - Stream: {self.theclass.stream.streamname} Faculty: {self.faculty.facultyname}"
 
 # Store specifications about a particular Group for tietable creation.
 class GroupSpecifiction(models.Model):
-    groupsubjectteachers = models.ForeignKey(Groupsubjectteachers, on_delete=models.CASCADE)
+    groupsubjectfaculties = models.ForeignKey(Groupsubjectfaculties, on_delete=models.CASCADE)
     day = models.CharField(max_length=20, choices=settings.DAYS)
     starttime = models.TimeField()
     endtime = models.TimeField()
@@ -127,4 +127,4 @@ class GroupSpecifiction(models.Model):
         verbose_name_plural = ("Group specificationrs")
 
     def __str__(self):
-        return f"{self.groupsubjectteachers.groupsubjects.group.groupname} Specifications"
+        return f"{self.groupsubjectfaculties.groupsubjects.group.groupname} Specifications"

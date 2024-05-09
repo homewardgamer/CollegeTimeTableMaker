@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ('starttime', models.TimeField()),
                 ('endtime', models.TimeField()),
                 ('subject', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.subjects')),
-                ('teacher', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.teachers')),
+                ('faculty', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.faculties')),
                 ('theclass', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='groups.groupclasses')),
                 ('timetablegroup', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='timetable.timetablegroup')),
             ],

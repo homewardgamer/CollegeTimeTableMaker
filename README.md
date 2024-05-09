@@ -55,8 +55,8 @@ You may want to modify the values for the last four variables in your settings.p
 
 ![settings.py file](screenshots/settings.png "Settings.py file")
 
-* DEFAULT_TEACHER_START_TIME - Specifies the default start time to use for every teacher's routine as you render the form in your browser.
-* DEFAULT_TEACHER_END_TIME - Specifies the default end time to use for every teacher's routine as you render the form in your browser.
+* DEFAULT_FACULTY_START_TIME - Specifies the default start time to use for every faculty's routine as you render the form in your browser.
+* DEFAULT_FACULTY_END_TIME - Specifies the default end time to use for every faculty's routine as you render the form in your browser.
 * DEFAULT_ROUTINE_START_TIME - Specifies the default start time to use for every group's routine as you render the form in your browser.
 * DEFAULT_ROUTINE_END_TIME - Specifies the default end time to use for every group's routine as you render the form in your browser.
 
@@ -71,7 +71,7 @@ Here are some of the screenshots of the application.
 - Lesson specification at a particular time.
 - Generate random colors for a given subject for a college for visual appeal as one generates a timetable.
 - Accommodate all days of the week to fit any college's routine.
-- Specify the routine of a particular teacher to generate a timetable fitting his/her schedule.
+- Specify the routine of a particular faculty to generate a timetable fitting his/her schedule.
 - Check if a college can generate its own timetable and reports on its errors in case of any.
 - Flexibility - One can specify how long a given group of a college should start or stop their daily sessions.
 
@@ -85,7 +85,7 @@ Here are some of the screenshots of the application.
 
     - Add subjects in your college. The subject name you enter should be unique for your college.  You can only delete a subject, if you delete the timetable using that subject. However, you can edit the subject's details.
     - Add streams in your college. At least all classes in a college should have a stream. The stream name you entered should be unique for that college.  You can only delete a stream, if you delete the class using that stream. However, you can edit the stream's details.
-    - Add teachers in your college. As you add a teacher, you should specify for each day, the teacher's routine. You can only delete a teacher, if you delete the timetable using that teacher. However, you can edit the teacher's details.
+    - Add faculties in your college. As you add a faculty, you should specify for each day, the faculty's routine. You can only delete a faculty, if you delete the timetable using that faculty. However, you can edit the faculty's details.
     - Add groups in your college. A group is where you define the routine, classes, breaks and lessons since a college may have different classes having their own routine.
 
     ---
@@ -101,9 +101,9 @@ Here are some of the screenshots of the application.
 - For each group you have created:
 
     - Add subjects to the group. The subjects list is from the subjects you have in your college. A subject is only added once in a group.
-    - Add classes. A class name of a particular stream only exists once in a given group. A class teacher can only have one class in that group. You can only delete a class, if you delete the timetable using that class. However, you can edit the class's details.
+    - Add classes. A class name of a particular stream only exists once in a given group. A class faculty can only have one class in that group. You can only delete a class, if you delete the timetable using that class. However, you can edit the class's details.
     - Add a routine for all days to include in your timetable with appropriate times. The routine of a particular day is chosen only once in that group.
-    - Add lessons in that group. For a given class and a given subject, there is only one teacher. The number of lessons per week should be of good estimates lest you have an error as you generate your timetable.
+    - Add lessons in that group. For a given class and a given subject, there is only one faculty. The number of lessons per week should be of good estimates lest you have an error as you generate your timetable.
     - You may add lesson specification if you wish to. The chosen period should be within the routine of a day.
     - You may add breaks for a particular group if you wish to. The chosen period should be within the routine of a given day.
 

@@ -17,7 +17,7 @@
   <a class="nav-link" href="{% url 'streamview' randomid=thecollege.randomid %}">Streams</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="{% url 'teacherview' randomid=thecollege.randomid %}">Teachers</a>
+  <a class="nav-link" href="{% url 'facultyview' randomid=thecollege.randomid %}">Faculties</a>
 </li>
 <li class="nav-item">
     <a class="nav-link" href="{% url 'timetablesview' randomid=thecollege.randomid %}">Timetables</a>
@@ -28,7 +28,7 @@
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
       <h5 class="card-title my_card_title">Timetable</h5>
-      <h5 class="card-title my_card_title">Class: {{ theclass.classname }} Stream: {{ theclass.stream.streamname }} Class Teacher: {{ theclass.classteacher.teachername }}</h5>
+      <h5 class="card-title my_card_title">Class: {{ theclass.classname }} Stream: {{ theclass.stream.streamname }} Class Faculty: {{ theclass.classfaculty.facultyname }}</h5>
     </div>
 </div>
 <style>
@@ -60,7 +60,7 @@
         <td style="background-color: {{ b.subject.color }}67;">
             <div class="text-center">
                 <p>{{ b.subject.subjectname }}</p>
-                <p>{{ b.teacher.teachername }}</p>
+                <p>{{ b.faculty.facultyname }}</p>
             </div>
         </td>
         {% endif %}

@@ -39,7 +39,7 @@
 {% for lesson in lessons %}
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
-      <h5 class="card-title">Subject: {{ lesson.groupsubjects.subject.subjectname }}  Class: {{ lesson.theclass.classname }} Stream: {{ lesson.theclass.stream.streamname }} Teacher: {{ lesson.teacher.teachername }}</h5>
+      <h5 class="card-title">Subject: {{ lesson.groupsubjects.subject.subjectname }}  Class: {{ lesson.theclass.classname }} Stream: {{ lesson.theclass.stream.streamname }} Faculty: {{ lesson.faculty.facultyname }}</h5>
       <a href="{% url 'editlesson' randomid=thecollege.randomid groupslug=thegroup.slug lessonid=lesson.id %}" class="card-link">Edit Lesson</a>
       <a href="{% url 'deletelesson' randomid=thecollege.randomid groupslug=thegroup.slug lessonid=lesson.id %}" class="card-link">Delete Lesson (This is not reversible)</a>
     </div>

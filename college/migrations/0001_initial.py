@@ -61,16 +61,16 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Teachers',
+            name='Faculties',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('teachername', models.CharField(max_length=100)),
+                ('facultyname', models.CharField(max_length=100)),
                 ('randomid', models.CharField(max_length=60, unique=True)),
                 ('college', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.college')),
             ],
             options={
-                'verbose_name': 'Teacher',
-                'verbose_name_plural': 'Teachers',
+                'verbose_name': 'Faculty',
+                'verbose_name_plural': 'Faculties',
             },
         ),
         migrations.CreateModel(

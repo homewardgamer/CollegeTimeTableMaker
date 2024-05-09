@@ -19,7 +19,7 @@
     <a class="nav-link" href="{% url 'streamview' randomid=thecollege.randomid %}">Streams</a>
 </li>
 <li class="nav-item">
-    <a class="nav-link" href="{% url 'teacherview' randomid=thecollege.randomid %}">Faculties</a>
+    <a class="nav-link" href="{% url 'facultyview' randomid=thecollege.randomid %}">Faculties</a>
 </li>
 <li class="nav-item">
     <a class="nav-link" href="{% url 'timetablesview' randomid=thecollege.randomid %}">Timetables</a>
@@ -31,7 +31,7 @@
 <div class="page-content">
     <div class="form-v5-content">
         <label class="form-title">{{ thelabel }}</label>
-        <form method='post' action="{% url 'editteacher' randomid=thecollege.randomid teacherrandomid=ateacherrandomid %}">
+        <form method='post' action="{% url 'addfaculty' randomid=thecollege.randomid %}">
             {% crispy form %}
             {{ formset.management_form|crispy }}
             

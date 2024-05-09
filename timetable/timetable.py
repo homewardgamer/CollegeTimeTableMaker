@@ -1,11 +1,11 @@
-from college.models import Subjects, Teachers, Streams, TeachersRoutine
-from groups.models import CollegeGroups, Groupsubjects, Groupsubjectteachers, Grouproutine, Groupclasses, GroupSpecifiction, Groupbreaks
+from college.models import Subjects, Faculties, Streams, FacultiesRoutine
+from groups.models import CollegeGroups, Groupsubjects, Groupsubjectfaculties, Grouproutine, Groupclasses, GroupSpecifiction, Groupbreaks
 from timetable.models import Timetablegroup, Timetablelessons, Timetablebreaks
 from django.conf import settings
 import random
 from datetime import timedelta, time
 
-# Check whether a particular college meets the requirements of generating a timetable(having teachers, subjects, streams, groups). It reports on any encountered errors.
+# Check whether a particular college meets the requirements of generating a timetable(having faculties, subjects, streams, groups). It reports on any encountered errors.
 def checktimetablerequiremnets_college(thecollege):
     # Store all errors
     timetableerrors = []
@@ -19,12 +19,12 @@ def checktimetablerequiremnets_college(thecollege):
         }
         timetableerrors.append(error_dict)
 
-    # Ensure the college has teachers
-    checkteachers = Teachers.objects.filter(college__id=thecollege.id).count()
-    # If there are no teachers
-    if checkteachers == 0:
+    # Ensure the college has faculties
+    checkfaculties = Faculties.objects.filter(college__id=thecollege.id).count()
+    # If there are no faculties
+    if checkfaculties == 0:
         error_dict = {
-            "error": 'You must have teachers in the college',
+            "error": 'You must have faculties in the college',
         }
         timetableerrors.append(error_dict)
 
@@ -77,7 +77,7 @@ def checktimetablerequiremnets_group(thecollege):
             timetableerrors.append(error_dict)
 
         # Ensure the group has lessons
-        checklessons = Groupsubjectteachers.objects.filter(groupsubjects__group__id=agroup.id).count()
+        checklessons = Groupsubjectfaculties.objects.filter(groupsubjects__group__id=agroup.id).count()
         # If there are no lessons
         if checklessons == 0:
             error_dict = {
@@ -123,7 +123,7 @@ def checktimetablerequiremnets(thecollege):
             # Loop though all classes
             for aclass in allclasses:
                 # Get the lesson specifications for this class in this day
-                classspecifications = GroupSpecifiction.objects.filter(groupsubjectteachers__groupsubjects__group__id=agroup.id, groupsubjectteachers__theclass__id=aclass.id, day=aroutine.day).order_by('starttime')
+                classspecifications = GroupSpecifiction.objects.filter(groupsubjectfaculties__groupsubjects__group__id=agroup.id, groupsubjectfaculties__theclass__id=aclass.id, day=aroutine.day).order_by('starttime')
                 classspecificationscount = classspecifications.count()
 
                 # Convert lesson duration to minutes
@@ -234,7 +234,7 @@ def class_withspecifications_nobreaks(current_class, routine_start, routine_end,
     else:
         # There is an arror
         error_dict = {
-            "error": f'For the class {current_class.classname } of the stream {current_class.stream.streamname}, there was an error when adding the lesson( {specification_torefer_to.groupsubjectteachers}). HINT: The duration of a lesson should align with the day\'s routine, and day\'s specifications(if any)',
+            "error": f'For the class {current_class.classname } of the stream {current_class.stream.streamname}, there was an error when adding the lesson( {specification_torefer_to.groupsubjectfaculties}). HINT: The duration of a lesson should align with the day\'s routine, and day\'s specifications(if any)',
         }
         timetableerrors.append(error_dict)
         # Stop recursion for the current class
@@ -308,7 +308,7 @@ def class_withspecifications_withbreaks(current_class, routine_start, routine_en
     else:
         # There is an arror
         error_dict = {
-            "error": f'For the class {current_class.classname } of the stream {current_class.stream.streamname}, there was an error when adding the lesson( {specification_torefer_to.groupsubjectteachers}). HINT: The duration of a lesson should align with the day\'s routine, day\'s breaks and day\'s specifications(if any)',
+            "error": f'For the class {current_class.classname } of the stream {current_class.stream.streamname}, there was an error when adding the lesson( {specification_torefer_to.groupsubjectfaculties}). HINT: The duration of a lesson should align with the day\'s routine, day\'s breaks and day\'s specifications(if any)',
         }
         timetableerrors.append(error_dict)
         # Stop recursion for the current class
@@ -384,13 +384,13 @@ def createtimetable(thecollege, tries_timetable):
     newtimetable.timetablegroupname = timetable_name
     newtimetable.save()
 
-    # Store the lessons of a given day of a given teacher
+    # Store the lessons of a given day of a given faculty
     # Ensure there is no collisions occuring during the geneation of a timetable.
-    teacherlessons = []
-    # Get all teachers in the college
-    allteachers = Teachers.objects.filter(college__id=thecollege.id)
-    # Loop for all teachers
-    for oneteacher in allteachers:
+    facultylessons = []
+    # Get all faculties in the college
+    allfaculties = Faculties.objects.filter(college__id=thecollege.id)
+    # Loop for all faculties
+    for onefaculty in allfaculties:
         all_days = []
         # Loop through all days
         for x, y in settings.DAYS:
@@ -400,62 +400,62 @@ def createtimetable(thecollege, tries_timetable):
             all_days.append(one_day)
 
         name_dict = {}
-        name_dict['teacherid'] = oneteacher.randomid
+        name_dict['facultyid'] = onefaculty.randomid
         name_dict['days'] = all_days
 
-        teacherlessons.append(name_dict)
+        facultylessons.append(name_dict)
 
     # Get the groups of the college
     collegegrps = CollegeGroups.objects.filter(college__id=thecollege.id)
 
-    # Loop through all specifications in the groups of a particular college and add the lessons in the list of 'teacherlessons' to ensure those sessions are booked and the teacher does not have another lesson at this particular time.
+    # Loop through all specifications in the groups of a particular college and add the lessons in the list of 'facultylessons' to ensure those sessions are booked and the faculty does not have another lesson at this particular time.
     for agroup in collegegrps:
         # Store all group specifications
-        group_specifications = GroupSpecifiction.objects.filter(groupsubjectteachers__groupsubjects__group__id=agroup.id)
+        group_specifications = GroupSpecifiction.objects.filter(groupsubjectfaculties__groupsubjects__group__id=agroup.id)
         # Loop through all specifications
         for t in group_specifications:
             group_specification_start_time = timedelta(hours=t.starttime.hour, minutes=t.starttime.minute, seconds=t.starttime.second)
             group_specification_end_time = timedelta(hours=t.endtime.hour, minutes=t.endtime.minute, seconds=t.endtime.second)
 
-            # Update the teacher with this lesson
-            # Loop though all teacherlessons
-            for i in range(len(teacherlessons)):
-                if teacherlessons[i]['teacherid'] == t.groupsubjectteachers.teacher.randomid:
-                    group_teacher_days = teacherlessons[i]['days']
+            # Update the faculty with this lesson
+            # Loop though all facultylessons
+            for i in range(len(facultylessons)):
+                if facultylessons[i]['facultyid'] == t.groupsubjectfaculties.faculty.randomid:
+                    group_faculty_days = facultylessons[i]['days']
                     # Get the particular day
-                    for j in range(len(group_teacher_days)):
-                        if (group_teacher_days[j]['theday'] == t.day):
-                            group_teacher_specificday = group_teacher_days[j][t.day]
+                    for j in range(len(group_faculty_days)):
+                        if (group_faculty_days[j]['theday'] == t.day):
+                            group_faculty_specificday = group_faculty_days[j][t.day]
 
-                            # Store teacher - day related info
-                            teacher_dict = {}
-                            teacher_dict['class'] = t.groupsubjectteachers.theclass
-                            teacher_dict['start_time'] = group_specification_start_time
-                            teacher_dict['end_time'] = group_specification_end_time
+                            # Store faculty - day related info
+                            faculty_dict = {}
+                            faculty_dict['class'] = t.groupsubjectfaculties.theclass
+                            faculty_dict['start_time'] = group_specification_start_time
+                            faculty_dict['end_time'] = group_specification_end_time
 
-                            # Check if group_teacher_specificday is an empy list
-                            if len(group_teacher_days) == 0:
-                                # add to teacher day
-                                group_teacher_specificday.append(teacher_dict)
+                            # Check if group_faculty_specificday is an empy list
+                            if len(group_faculty_days) == 0:
+                                # add to faculty day
+                                group_faculty_specificday.append(faculty_dict)
                             # Check that there is no collission
                             else:
-                                for k in range(len(group_teacher_specificday)):
-                                    group_teacher_starttime = group_teacher_specificday[k]['start_time']
-                                    group_teacher_endtime = group_teacher_specificday[k]['end_time']
+                                for k in range(len(group_faculty_specificday)):
+                                    group_faculty_starttime = group_faculty_specificday[k]['start_time']
+                                    group_faculty_endtime = group_faculty_specificday[k]['end_time']
 
                                     # Check if there will be a collision on adding
-                                    if ((group_specification_start_time <= group_teacher_starttime) and  (group_specification_end_time > group_teacher_starttime)) or ((group_specification_start_time >= group_teacher_starttime) and (group_specification_start_time < group_teacher_endtime)):
+                                    if ((group_specification_start_time <= group_faculty_starttime) and  (group_specification_end_time > group_faculty_starttime)) or ((group_specification_start_time >= group_faculty_starttime) and (group_specification_start_time < group_faculty_endtime)):
                                         # There is an arror
                                         newly_created = Timetablegroup.objects.get(id=newtimetable.id)
                                         newly_created.delete()
                                         timetable_errors = []
                                         error_dict = {
-                                            "error": f'There was an error adding the lesson specifications for teacher {one_specification.groupsubjectteachers.teacher.teachername} since he/she has another lesson at this time',
+                                            "error": f'There was an error adding the lesson specifications for faculty {one_specification.groupsubjectfaculties.faculty.facultyname} since he/she has another lesson at this time',
                                         }
                                         timetable_errors.append(error_dict)
                                         return timetable_errors
-                                # add to teacher day
-                                group_teacher_specificday.append(teacher_dict)
+                                # add to faculty day
+                                group_faculty_specificday.append(faculty_dict)
                     # break the loop after a match
                     break
 
@@ -469,12 +469,12 @@ def createtimetable(thecollege, tries_timetable):
         # keeps track of how many lessons of a particular class have been added until it has reached the number of lessons specified by a user. At first, all number of lessons added is initialized to zero.
         lessons_number = []
         # Get all lessons
-        all_lessons = Groupsubjectteachers.objects.filter(groupsubjects__group__id=agroup.id)
+        all_lessons = Groupsubjectfaculties.objects.filter(groupsubjects__group__id=agroup.id)
         for one in all_lessons:
             my_dict = {}
             my_dict['groupsubjects'] = one.groupsubjects
             my_dict['theclass'] = one.theclass
-            my_dict['teacher'] = one.teacher
+            my_dict['faculty'] = one.faculty
             my_dict['nooflessonsperweek'] = one.nooflessonsperweek
             my_dict['current_number'] = 0
             lessons_number.append(my_dict)
@@ -488,7 +488,7 @@ def createtimetable(thecollege, tries_timetable):
             # Loop though all classes
             for aclass in allclasses:
                 # Check all lessons for a given class
-                check_lessons = Groupsubjectteachers.objects.filter( theclass__id=aclass.id).count()
+                check_lessons = Groupsubjectfaculties.objects.filter( theclass__id=aclass.id).count()
                 # If there are no lessons, the program should continue until it encounters a class with a lesson specified
                 if check_lessons == 0:
                     pass
@@ -501,7 +501,7 @@ def createtimetable(thecollege, tries_timetable):
                     the_start_time = timedelta(hours=aroutine.starttime.hour, minutes=aroutine.starttime.minute, seconds=aroutine.starttime.second)
 
                     # Check the lesson specifications for this class in this day
-                    classspecifications = GroupSpecifiction.objects.filter( groupsubjectteachers__theclass__id=aclass.id, day=aroutine.day).order_by('starttime')
+                    classspecifications = GroupSpecifiction.objects.filter( groupsubjectfaculties__theclass__id=aclass.id, day=aroutine.day).order_by('starttime')
                     classspecificationscount = classspecifications.count()
                     
                     # If there are specifications of this current class at a particular day, add then updating them to the classlessons list and update the lesson_number list.
@@ -515,24 +515,24 @@ def createtimetable(thecollege, tries_timetable):
                                 the_start_time = specification_end_time
 
                             lesson_dict = {}
-                            lesson_dict['teacher'] = one_specification.groupsubjectteachers.teacher
-                            lesson_dict['subject'] = one_specification.groupsubjectteachers.groupsubjects.subject
+                            lesson_dict['faculty'] = one_specification.groupsubjectfaculties.faculty
+                            lesson_dict['subject'] = one_specification.groupsubjectfaculties.groupsubjects.subject
                             lesson_dict['start_time'] = specification_start_time
                             lesson_dict['end_time'] = specification_end_time
 
                             # Update the classlessons
                             classlessons.append(lesson_dict)
 
-                            # Teachers are already updated so there is no need
+                            # Faculties are already updated so there is no need
                             
                             # lessons number
                             for alesson in lessons_number:
                                 # Update where there is a match
-                                if (alesson['groupsubjects'] == one_specification.groupsubjectteachers.groupsubjects) and (alesson['theclass'] == one_specification.groupsubjectteachers.theclass) and (alesson['teacher'] == one_specification.groupsubjectteachers.teacher):
+                                if (alesson['groupsubjects'] == one_specification.groupsubjectfaculties.groupsubjects) and (alesson['theclass'] == one_specification.groupsubjectfaculties.theclass) and (alesson['faculty'] == one_specification.groupsubjectfaculties.faculty):
                                     alesson['current_number'] += 1
                 
                     # Get all subjects of this class
-                    all_subjects = Groupsubjectteachers.objects.filter(theclass__id=aclass.id)
+                    all_subjects = Groupsubjectfaculties.objects.filter(theclass__id=aclass.id)
 
                     # Store all distinct subjects
                     all_class_subjects = []
@@ -550,9 +550,9 @@ def createtimetable(thecollege, tries_timetable):
                     # Store tries if there is issue with subject
                     # Keep track of the number of tries one has done
                     tries_subjects = 1
-                    # Store tries if there is issue with teacher
+                    # Store tries if there is issue with faculty
                     # Keep track of the number of tries one has done
-                    tries_teacher = 1
+                    tries_faculty = 1
                     
                     # Do for all lessons in this day until the routine endtime
                     the_end_time = timedelta(hours=aroutine.endtime.hour, minutes=aroutine.endtime.minute, seconds=aroutine.endtime.second)
@@ -601,7 +601,7 @@ def createtimetable(thecollege, tries_timetable):
                                 random_subject = random.choice(subjectstopick)
                                 
                                 # Get the lesson details on the chosen subject
-                                thelesson_fromdb = Groupsubjectteachers.objects.get(groupsubjects__subject__subjectname=random_subject, groupsubjects__group__id=agroup.id, theclass__id=aclass.id)
+                                thelesson_fromdb = Groupsubjectfaculties.objects.get(groupsubjects__subject__subjectname=random_subject, groupsubjects__group__id=agroup.id, theclass__id=aclass.id)
 
                                 current_number_lessons = 0
                                 max_number_lessons = 0
@@ -609,7 +609,7 @@ def createtimetable(thecollege, tries_timetable):
                                 # use the details to compare with the lesson_number list
                                 for alesson in lessons_number:
                                     # Update where there is a match
-                                    if (alesson['groupsubjects'] == thelesson_fromdb.groupsubjects) and (alesson['theclass'] == thelesson_fromdb.theclass) and (alesson['teacher'] == thelesson_fromdb.teacher):
+                                    if (alesson['groupsubjects'] == thelesson_fromdb.groupsubjects) and (alesson['theclass'] == thelesson_fromdb.theclass) and (alesson['faculty'] == thelesson_fromdb.faculty):
                                         current_number_lessons = alesson['current_number']
                                         max_number_lessons = alesson['nooflessonsperweek']
 
@@ -617,7 +617,7 @@ def createtimetable(thecollege, tries_timetable):
                                 if current_number_lessons <= max_number_lessons:
                                     # Ensure it is initialized to one
                                     tries_subjects = 1
-                                    # Variable to check if the teacher's routine is okay
+                                    # Variable to check if the faculty's routine is okay
                                     routine_check = 0
 
                                     # Convert lesson duration to minutes
@@ -627,38 +627,38 @@ def createtimetable(thecollege, tries_timetable):
                                     # Store the time the lesson is to end
                                     expected_time_tooend = the_start_time + lesson_duration
 
-                                    # Update the teacher with this lesson
-                                    # Loop though all teacherlessons
-                                    for i in range(len(teacherlessons)):
-                                        if teacherlessons[i]['teacherid'] == thelesson_fromdb.teacher.randomid:
-                                            teacher_days = teacherlessons[i]['days']
+                                    # Update the faculty with this lesson
+                                    # Loop though all facultylessons
+                                    for i in range(len(facultylessons)):
+                                        if facultylessons[i]['facultyid'] == thelesson_fromdb.faculty.randomid:
+                                            faculty_days = facultylessons[i]['days']
                                             # Get the particular day
-                                            for j in range(len(teacher_days)):
-                                                if (teacher_days[j]['theday'] == aroutine.day):
-                                                    teacher_specificday = teacher_days[j][aroutine.day]
-                                                    # Check if teacher_specificday is an empy list
+                                            for j in range(len(faculty_days)):
+                                                if (faculty_days[j]['theday'] == aroutine.day):
+                                                    faculty_specificday = faculty_days[j][aroutine.day]
+                                                    # Check if faculty_specificday is an empy list
                                                     # Proceed to check routine if it is not an empty list
-                                                    if len(teacher_days) > 0:
-                                                        for k in range(len(teacher_specificday)):
-                                                            teacher_starttime = teacher_specificday[k]['start_time']
-                                                            teacher_endtime = teacher_specificday[k]['end_time']
+                                                    if len(faculty_days) > 0:
+                                                        for k in range(len(faculty_specificday)):
+                                                            faculty_starttime = faculty_specificday[k]['start_time']
+                                                            faculty_endtime = faculty_specificday[k]['end_time']
 
 
                                                             # Check if there will be a collision on adding
-                                                            if ((the_start_time <= teacher_starttime) and (expected_time_tooend > teacher_starttime)) or ((the_start_time >= teacher_starttime) and (the_start_time < teacher_endtime)):
+                                                            if ((the_start_time <= faculty_starttime) and (expected_time_tooend > faculty_starttime)) or ((the_start_time >= faculty_starttime) and (the_start_time < faculty_endtime)):
                                                                 # There is an arror
                                                                 routine_check += 1
                                                 
                                             # break the loop after a match
                                             break
                                     
-                                    # Get the teachers routine
-                                    teacher_routine = TeachersRoutine.objects.get(teacher__id=thelesson_fromdb.teacher.id, day=aroutine.day)
+                                    # Get the faculties routine
+                                    faculty_routine = FacultiesRoutine.objects.get(faculty__id=thelesson_fromdb.faculty.id, day=aroutine.day)
 
-                                    # Check if it will be in teacher routine range
-                                    teacher_start_time = timedelta(hours=teacher_routine.starttime.hour, minutes=teacher_routine.starttime.minute, seconds=teacher_routine.starttime.second)
-                                    teacher_end_time = timedelta(hours=teacher_routine.endtime.hour, minutes=teacher_routine.endtime.minute, seconds=teacher_routine.endtime.second)
-                                    if ((the_start_time < teacher_start_time) and (expected_time_tooend > teacher_end_time)):
+                                    # Check if it will be in faculty routine range
+                                    faculty_start_time = timedelta(hours=faculty_routine.starttime.hour, minutes=faculty_routine.starttime.minute, seconds=faculty_routine.starttime.second)
+                                    faculty_end_time = timedelta(hours=faculty_routine.endtime.hour, minutes=faculty_routine.endtime.minute, seconds=faculty_routine.endtime.second)
+                                    if ((the_start_time < faculty_start_time) and (expected_time_tooend > faculty_end_time)):
                                         # There is an arror
                                         routine_check += 1
 
@@ -667,14 +667,14 @@ def createtimetable(thecollege, tries_timetable):
                                         # Update routine check to 0
                                         routine_check = 0
                                         # If this is the first try
-                                        if tries_teacher == 1:
+                                        if tries_faculty == 1:
                                             starttimeconfirm = the_start_time
                                         
                                         if the_start_time == starttimeconfirm:
-                                            tries_teacher += 1
+                                            tries_faculty += 1
 
                                         # If done this for all subjects
-                                        if (tries_teacher == (len(all_class_subjects))):
+                                        if (tries_faculty == (len(all_class_subjects))):
                                             
                                             # Delete the timetable group
                                             newly_created = Timetablegroup.objects.get(id=newtimetable.id)
@@ -683,7 +683,7 @@ def createtimetable(thecollege, tries_timetable):
                                             
                                             timetable_errors = []
                                             error_dict = {  
-                                                "error": f'There was an error creating the timetable. Please ensure the number of lessons per week are of good estimates. Please ensure the routine of  teacher in your college is flexible. ',
+                                                "error": f'There was an error creating the timetable. Please ensure the number of lessons per week are of good estimates. Please ensure the routine of  faculty in your college is flexible. ',
                                             }
                                             timetable_errors.append(error_dict)
 
@@ -693,9 +693,9 @@ def createtimetable(thecollege, tries_timetable):
                                     # If there was no collission, performs an addition of the lesson
                                     else:
                                         # Ensure this becomes one
-                                        tries_teacher = 1
+                                        tries_faculty = 1
                                         lesson_dict = {}
-                                        lesson_dict['teacher'] = thelesson_fromdb.teacher
+                                        lesson_dict['faculty'] = thelesson_fromdb.faculty
                                         lesson_dict['subject'] = thelesson_fromdb.groupsubjects.subject
                                         lesson_dict['start_time'] = the_start_time
                                         lesson_dict['end_time'] = expected_time_tooend 
@@ -703,29 +703,29 @@ def createtimetable(thecollege, tries_timetable):
                                         # Update the classlessons
                                         classlessons.append(lesson_dict)
 
-                                        # Loop though all teacherlessons
-                                        for i in range(len(teacherlessons)):
-                                            if teacherlessons[i]['teacherid'] == thelesson_fromdb.teacher.randomid:
-                                                teacher_days = teacherlessons[i]['days']
+                                        # Loop though all facultylessons
+                                        for i in range(len(facultylessons)):
+                                            if facultylessons[i]['facultyid'] == thelesson_fromdb.faculty.randomid:
+                                                faculty_days = facultylessons[i]['days']
                                                 # Get the particular day
-                                                for j in range(len(teacher_days)):
-                                                    if (teacher_days[j]['theday'] == aroutine.day):
-                                                        teacher_specificday = teacher_days[j][aroutine.day]
+                                                for j in range(len(faculty_days)):
+                                                    if (faculty_days[j]['theday'] == aroutine.day):
+                                                        faculty_specificday = faculty_days[j][aroutine.day]
 
-                                                        # Store teacher - day related info
-                                                        teacher_dict = {}
-                                                        teacher_dict['class'] = aclass
-                                                        teacher_dict['start_time'] = the_start_time
-                                                        teacher_dict['end_time'] = expected_time_tooend
+                                                        # Store faculty - day related info
+                                                        faculty_dict = {}
+                                                        faculty_dict['class'] = aclass
+                                                        faculty_dict['start_time'] = the_start_time
+                                                        faculty_dict['end_time'] = expected_time_tooend
 
-                                                        teacher_specificday.append(teacher_dict)
+                                                        faculty_specificday.append(faculty_dict)
                                                 # break the loop after a match
                                                 break
 
                                         # lessons number
                                         for alesson in lessons_number:
                                             # Update where there is a match
-                                            if (alesson['groupsubjects'] == thelesson_fromdb.groupsubjects) and (alesson['theclass'] == thelesson_fromdb.theclass) and (alesson['teacher'] == thelesson_fromdb.teacher):
+                                            if (alesson['groupsubjects'] == thelesson_fromdb.groupsubjects) and (alesson['theclass'] == thelesson_fromdb.theclass) and (alesson['faculty'] == thelesson_fromdb.faculty):
                                                 alesson['current_number'] += 1
                                         
                                         # update the start time
@@ -775,7 +775,7 @@ def createtimetable(thecollege, tries_timetable):
                         newlesson.starttime = calculate_time(lesson_start.seconds) 
                         newlesson.endtime = calculate_time(lesson_end.seconds)
                         newlesson.theclass = aclass
-                        newlesson.teacher = classlessons[a]['teacher']
+                        newlesson.faculty = classlessons[a]['faculty']
                         newlesson.subject = classlessons[a]['subject']
                         newlesson.save()
     # Return True if all is well

@@ -1,7 +1,7 @@
 from dataclasses import fields
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, UserChangeForm
-from .models import User, College, Streams, Teachers, Subjects, TeachersRoutine
+from .models import User, College, Streams, Faculties, Subjects, FacultiesRoutine
 from .validators import validate_logo
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset
@@ -192,19 +192,19 @@ class StreamForm(forms.ModelForm):
                 if checkstreamname > 0:
                     raise forms.ValidationError("The stream name should be unique")
 
-# Teachers Form
-class TeachersForm(forms.ModelForm):
-    teachername = forms.CharField(
+# Faculties Form
+class FacultiesForm(forms.ModelForm):
+    facultyname = forms.CharField(
         required=True,
-        label='Enter your Teacher Name',
+        label='Enter your Faculty Name',
     )
 
     class Meta:
-        model = Teachers
-        fields = ['teachername']
+        model = Faculties
+        fields = ['facultyname']
 
     def __init__(self, *args, **kwargs):
-        super(TeachersForm, self).__init__(*args, **kwargs)
+        super(FacultiesForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
 
@@ -213,11 +213,11 @@ class TeachersForm(forms.ModelForm):
 
         # Create a fieldset
         self.helper.layout = Layout(
-            Fieldset('', 'teachername')
+            Fieldset('', 'facultyname')
         )
 
-# Teachers Routine Form
-class TeachersRoutineForm(forms.ModelForm):
+# Faculties Routine Form
+class FacultiesRoutineForm(forms.ModelForm):
     day = forms.ChoiceField(
         required=True,
         label='Choose the day',
@@ -231,7 +231,7 @@ class TeachersRoutineForm(forms.ModelForm):
             attrs={
                 'type': 'time',
                 'required':'required',
-                'value':settings.DEFAULT_TEACHER_START_TIME,
+                'value':settings.DEFAULT_FACULTY_START_TIME,
             }
         ),
     )
@@ -242,31 +242,31 @@ class TeachersRoutineForm(forms.ModelForm):
             attrs={
                 'type': 'time',
                 'required':'required',
-                'value':settings.DEFAULT_TEACHER_END_TIME,
+                'value':settings.DEFAULT_FACULTY_END_TIME,
             }
         ),
     )
 
     class Meta:
-        model = TeachersRoutine
+        model = FacultiesRoutine
         fields = ['day', 'starttime', 'endtime']
 
-class TeachersRoutineFormHelper(FormHelper):
+class FacultiesRoutineFormHelper(FormHelper):
 
     def __init__(self, *args, **kwargs):
-        super(TeachersRoutineFormHelper, self).__init__(*args, **kwargs)
+        super(FacultiesRoutineFormHelper, self).__init__(*args, **kwargs)
 
         # Do not show the form tag
         self.form_tag = False
 
         self.layout = Layout(
-            Fieldset("Teacher Routine", 'day', 'starttime', 'endtime', css_class="form-title"),
+            Fieldset("Faculty Routine", 'day', 'starttime', 'endtime', css_class="form-title"),
         )
 
-# Validate All Teachers Routine
-class TeacherRoutine_FormSet(forms.BaseInlineFormSet):
+# Validate All Faculties Routine
+class FacultyRoutine_FormSet(forms.BaseInlineFormSet):
     def clean(self):
-        super(TeacherRoutine_FormSet, self).clean()
+        super(FacultyRoutine_FormSet, self).clean()
 
         # Store the chosen days
         thechosendays = []
@@ -283,22 +283,22 @@ class TeacherRoutine_FormSet(forms.BaseInlineFormSet):
             if starttime >= endtime:
                 raise forms.ValidationError("The start time should be less and not equal to the endtime")
 
-# Form for adding or editing the Teachers and Teachersroutine models. Ensures days entered is unique per teacher. Ensure entered end time is greater the entered start time.
+# Form for adding or editing the Faculties and Facultiesroutine models. Ensures days entered is unique per faculty. Ensure entered end time is greater the entered start time.
 # Ennsure the extras are seven for each day
-addteacherroutineformset = forms.models.inlineformset_factory(
-    Teachers,
-    TeachersRoutine,
-    form=TeachersRoutineForm,
-    formset=TeacherRoutine_FormSet,
+addfacultyroutineformset = forms.models.inlineformset_factory(
+    Faculties,
+    FacultiesRoutine,
+    form=FacultiesRoutineForm,
+    formset=FacultyRoutine_FormSet,
     extra=7,
     can_delete=False,
 )
 # Ensure there are no extras
-editteacherroutineformset = forms.models.inlineformset_factory(
-    Teachers,
-    TeachersRoutine,
-    form=TeachersRoutineForm,
-    formset=TeacherRoutine_FormSet,
+editfacultyroutineformset = forms.models.inlineformset_factory(
+    Faculties,
+    FacultiesRoutine,
+    form=FacultiesRoutineForm,
+    formset=FacultyRoutine_FormSet,
     extra=0,
     can_delete=False,
 )

@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.urls import reverse
 from college.models import College
 from college.models import Subjects
-from .models import GroupSpecifiction, Groupbreaks, Groupclasses, Grouproutine, Groupsubjects, Groupsubjectteachers, CollegeGroups
+from .models import GroupSpecifiction, Groupbreaks, Groupclasses, Grouproutine, Groupsubjects, Groupsubjectfaculties, CollegeGroups
 from .forms import GroupsForm, ClassForm, RoutineForm, BreaksForm, GroupSubjectsForm, LessonForm, GroupSpecifictionForm
 
 # View all Groups In Agiven College
@@ -95,8 +95,8 @@ def groupview(request, randomid, groupslug):
     breaks = Groupbreaks.objects.filter(group__id=thegroup.id)[:3]
     routine = Grouproutine.objects.filter(group__id=thegroup.id)[:3]
     subjects = Groupsubjects.objects.filter(group__id=thegroup.id)[:3]
-    lessons = Groupsubjectteachers.objects.filter(groupsubjects__group__id=thegroup.id)[:3]
-    specifications = GroupSpecifiction.objects.filter(groupsubjectteachers__groupsubjects__group__id=thegroup.id)[:3]
+    lessons = Groupsubjectfaculties.objects.filter(groupsubjects__group__id=thegroup.id)[:3]
+    specifications = GroupSpecifiction.objects.filter(groupsubjectfaculties__groupsubjects__group__id=thegroup.id)[:3]
     
     return render(request, "frontend/groups/groupsdisplay.html", {"thecollege":thecollege, "thegroup":thegroup, "classes":classes,"breaks":breaks,"routines":routine,"subjects":subjects,"lessons":lessons, "specifications":specifications})
 
@@ -121,13 +121,13 @@ def classadd(request, randomid, groupslug):
     # Store title of page
     thelabel = 'Add A Class'
     # initialize the form
-    classform = ClassForm(thecollege=thecollege, thegroup=thegroup, thestate='Add', classname=None, theclassteacher=None, stream=None)
+    classform = ClassForm(thecollege=thecollege, thegroup=thegroup, thestate='Add', classname=None, theclassfaculty=None, stream=None)
 
     # Set form action
     classform.helper.form_action = reverse('addclass', kwargs={"randomid":randomid, "groupslug":groupslug})
 
     if request.method == 'POST':
-        classform = ClassForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Add', classname=None, theclassteacher=None, stream=None)
+        classform = ClassForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Add', classname=None, theclassfaculty=None, stream=None)
         if classform.is_valid():
             # Save the class
             theclass = classform.save(commit=False)
@@ -154,19 +154,19 @@ def classedit(request, randomid, groupslug, classslug):
     update_initial = {}
     update_initial['stream'] = theclass.stream
     update_initial['classname'] = theclass.classname
-    update_initial['classteacher'] = theclass.classteacher
-    classform = ClassForm(thecollege=thecollege, thegroup=thegroup, thestate='Edit', classname=theclass.classname, theclassteacher=theclass.classteacher, stream=theclass.stream.streamname, data=update_initial)
+    update_initial['classfaculty'] = theclass.classfaculty
+    classform = ClassForm(thecollege=thecollege, thegroup=thegroup, thestate='Edit', classname=theclass.classname, theclassfaculty=theclass.classfaculty, stream=theclass.stream.streamname, data=update_initial)
 
     # Set form action
     classform.helper.form_action = reverse('editclass', kwargs={"randomid":randomid, "groupslug":groupslug, "classslug":classslug})
 
     if request.method == 'POST':
-        classform = ClassForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Edit', classname=theclass.classname, theclassteacher=theclass.classteacher, stream=theclass.stream.streamname)
+        classform = ClassForm(request.POST, thecollege=thecollege, thegroup=thegroup, thestate='Edit', classname=theclass.classname, theclassfaculty=theclass.classfaculty, stream=theclass.stream.streamname)
         if classform.is_valid():
             # Save the class
             theclass.classname = classform.cleaned_data['classname']
             theclass.stream = classform.cleaned_data['stream']
-            theclass.classteacher = classform.cleaned_data['classteacher']
+            theclass.classfaculty = classform.cleaned_data['classfaculty']
             theclass.save()
             messages.success(request, "You successfully edited a class")
             gottourl = reverse("classview", kwargs={"randomid":randomid, "groupslug":groupslug})
@@ -460,7 +460,7 @@ def lessonsview(request, randomid, groupslug):
     # Check if the group exists
     thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Show the lessons
-    lessons = Groupsubjectteachers.objects.filter(groupsubjects__group__id=thegroup.id)
+    lessons = Groupsubjectfaculties.objects.filter(groupsubjects__group__id=thegroup.id)
     return render(request, "frontend/groups/lessonsview.html", {"thecollege":thecollege, "thegroup":thegroup, "lessons":lessons})
 
 # Add a lessons
@@ -498,13 +498,13 @@ def lessonsedit(request, randomid, groupslug, lessonid):
     # Store title of page
     thelabel = 'Edit A Lesson'
     # Check if a lesson exists
-    thelesson = get_object_or_404(Groupsubjectteachers, id=lessonid)
+    thelesson = get_object_or_404(Groupsubjectfaculties, id=lessonid)
     # initialize the form
     # Store initial data
     update_initial = {}
     update_initial['groupsubjects'] = thelesson.groupsubjects
     update_initial['theclass'] = thelesson.theclass
-    update_initial['teacher'] = thelesson.teacher
+    update_initial['faculty'] = thelesson.faculty
     update_initial['nooflessonsperweek'] = thelesson.nooflessonsperweek
     # initialize the form
     lessonsform = LessonForm(thecollege=thecollege, thegroup=thegroup, thestate='Edit',thelesson=thelesson, data=update_initial)
@@ -518,7 +518,7 @@ def lessonsedit(request, randomid, groupslug, lessonid):
             # Save the lesson
             thelesson.groupsubjects = lessonsform.cleaned_data['groupsubjects']
             thelesson.theclass =  lessonsform.cleaned_data['theclass']
-            thelesson.teacher = lessonsform.cleaned_data['teacher']
+            thelesson.faculty = lessonsform.cleaned_data['faculty']
             thelesson.nooflessonsperweek = lessonsform.cleaned_data['nooflessonsperweek']
             thelesson.save()
             messages.success(request, "You successfully edited a lesson")
@@ -534,7 +534,7 @@ def lessonsdelete(request, randomid, groupslug, lessonid):
     # Check if the group exists
     get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Check if a lesson exists
-    thelesson = get_object_or_404(Groupsubjectteachers, id=lessonid)
+    thelesson = get_object_or_404(Groupsubjectfaculties, id=lessonid)
     thelesson.delete()
     gottourl = reverse("lessonsview", kwargs={"randomid":randomid, "groupslug":groupslug})
     messages.success(request, "You successfully deleted a lesson")
@@ -548,7 +548,7 @@ def specificationsview(request, randomid, groupslug):
     # Check if the group exists
     thegroup = get_object_or_404(CollegeGroups, college__randomid=randomid, slug=groupslug)
     # Show the specifications
-    specifications = GroupSpecifiction.objects.filter(groupsubjectteachers__groupsubjects__group__id=thegroup.id)
+    specifications = GroupSpecifiction.objects.filter(groupsubjectfaculties__groupsubjects__group__id=thegroup.id)
     return render(request, "frontend/groups/specificationsview.html", {"thecollege":thecollege, "thegroup":thegroup, "specifications":specifications})
 
 # Add a specifications
@@ -590,7 +590,7 @@ def specificationsedit(request, randomid, groupslug, specificid):
     # initialize the form
     # Store initial data
     update_initial = {}
-    update_initial['groupsubjectteachers'] = thespecification.groupsubjectteachers
+    update_initial['groupsubjectfaculties'] = thespecification.groupsubjectfaculties
     update_initial['day'] = thespecification.day
     update_initial['starttime'] = thespecification.starttime
     update_initial['endtime'] = thespecification.endtime
@@ -604,7 +604,7 @@ def specificationsedit(request, randomid, groupslug, specificid):
         specificationsform = GroupSpecifictionForm(request.POST, thegroup=thegroup, thestate='Edit',thespecification=thespecification)
         if specificationsform.is_valid():
             # Save the lesson
-            thespecification.groupsubjectteachers = specificationsform.cleaned_data['groupsubjectteachers']
+            thespecification.groupsubjectfaculties = specificationsform.cleaned_data['groupsubjectfaculties']
             thespecification.day =  specificationsform.cleaned_data['day']
             thespecification.starttime = specificationsform.cleaned_data['starttime']
             thespecification.endtime = specificationsform.cleaned_data['endtime']

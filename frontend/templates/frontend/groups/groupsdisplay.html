@@ -37,7 +37,7 @@
 {% for class in classes %}
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
-      <h5 class="card-title">Class: {{ class.classname }} Stream: {{ class.stream.streamname }} Class Teacher: {{ class.classteacher.teachername }}</h5>
+      <h5 class="card-title">Class: {{ class.classname }} Stream: {{ class.stream.streamname }} Class Faculty: {{ class.classfaculty.facultyname }}</h5>
       <a href="{% url 'editclass' randomid=thecollege.randomid groupslug=thegroup.slug classslug=class.slug %}" class="card-link">Edit Class</a>
       {% if class.ifcandelete is True %}<a href="{% url 'deleteclass' randomid=thecollege.randomid groupslug=thegroup.slug classslug=class.slug %}" class="card-link">Delete Class (This is not reversible)</a>
       {% else %}<a href="#" class="card-link disabled">To delete this class, delete the timetable using this classes.</a>{% endif %}
@@ -223,7 +223,7 @@
 {% for lesson in lessons %}
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
-      <h5 class="card-title">Subject: {{ lesson.groupsubjects.subject.subjectname }}  Class: {{ lesson.theclass.classname }} Stream: {{ lesson.theclass.stream.streamname }} Teacher: {{ lesson.teacher.teachername }}</h5>
+      <h5 class="card-title">Subject: {{ lesson.groupsubjects.subject.subjectname }}  Class: {{ lesson.theclass.classname }} Stream: {{ lesson.theclass.stream.streamname }} Faculty: {{ lesson.faculty.facultyname }}</h5>
       <a href="{% url 'editlesson' randomid=thecollege.randomid groupslug=thegroup.slug lessonid=lesson.id %}" class="card-link">Edit Lesson</a>
       <a href="{% url 'deletelesson' randomid=thecollege.randomid groupslug=thegroup.slug lessonid=lesson.id %}" class="card-link">Delete Lesson (This is not reversible)</a>
     </div>
@@ -269,7 +269,7 @@
 {% for specification in specifications %}
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
-        <h5 class="card-title">The Lesson: {{ specification.groupsubjectteachers }}</h5>
+        <h5 class="card-title">The Lesson: {{ specification.groupsubjectfaculties }}</h5>
       <h5 class="card-title">Day: {{ specification.day }} Start time: {{ specification.starttime }} End time: {{ specification.endtime }}</h5>
       <a href="{% url 'editspecification' randomid=thecollege.randomid groupslug=thegroup.slug specificid=specification.id %}" class="card-link">Edit Specification</a>
       <a href="{% url 'deletespecification' randomid=thecollege.randomid groupslug=thegroup.slug specificid=specification.id %}" class="card-link">Delete Specification (This is not reversible)</a>

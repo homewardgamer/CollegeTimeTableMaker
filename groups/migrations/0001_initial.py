@@ -75,14 +75,14 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Groupsubjectteachers',
+            name='Groupsubjectfaculties',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('nooflessonsperweek', models.PositiveIntegerField()),
             ],
             options={
-                'verbose_name': 'Group subject teacher',
-                'verbose_name_plural': 'Group subject teachers',
+                'verbose_name': 'Group subject faculty',
+                'verbose_name_plural': 'Group subject faculties',
             },
         ),
         migrations.CreateModel(

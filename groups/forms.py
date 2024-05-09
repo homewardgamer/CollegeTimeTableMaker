@@ -2,8 +2,8 @@ from dataclasses import fields
 from pyexpat import model
 from django import forms
 
-from college.models import Streams, Subjects, Teachers
-from .models import CollegeGroups, Groupbreaks, Groupclasses, Grouproutine, Groupsubjects, GroupSpecifiction, Groupsubjectteachers
+from college.models import Streams, Subjects, Faculties
+from .models import CollegeGroups, Groupbreaks, Groupclasses, Grouproutine, Groupsubjects, GroupSpecifiction, Groupsubjectfaculties
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.conf import settings
@@ -56,7 +56,7 @@ class GroupsForm(forms.ModelForm):
                 if checksgroupname > 0:
                     raise forms.ValidationError("The group name should be unique")
 
-# Form for adding or editing Groupclasses model. Ensures a class and stream are unique per group. Ensure a class teacher is unique per class in one group.
+# Form for adding or editing Groupclasses model. Ensures a class and stream are unique per group. Ensure a class faculty is unique per class in one group.
 class ClassForm(forms.ModelForm):
     classname = forms.CharField(
         required=True,
@@ -65,25 +65,25 @@ class ClassForm(forms.ModelForm):
 
     class Meta:
         model = Groupclasses
-        fields = ['stream', 'classteacher', 'classname']
+        fields = ['stream', 'classfaculty', 'classname']
 
     def __init__(self, *args, **kwargs):
         self.currentcollege = kwargs.pop('thecollege')
         self.currentgroup = kwargs.pop('thegroup')
         self.currentstate = kwargs.pop('thestate')
         self.initialclassname = kwargs.pop('classname')
-        self.initialclassteacher = kwargs.pop('theclassteacher')
+        self.initialclassfaculty = kwargs.pop('theclassfaculty')
         self.initialstream = kwargs.pop('stream')
 
 
         super(ClassForm, self).__init__(*args, **kwargs)
 
-        # Initialize teacher
-        self.fields['classteacher'] = forms.ModelChoiceField(
+        # Initialize faculty
+        self.fields['classfaculty'] = forms.ModelChoiceField(
                 required=True,
-                label='Choose your class teacher',
-                help_text='A class teacher is unique per class',
-                queryset=Teachers.objects.filter(college__id=self.currentcollege.id),
+                label='Choose your class faculty',
+                help_text='A class faculty is unique per class',
+                queryset=Faculties.objects.filter(college__id=self.currentcollege.id),
             )
         
         # Initialize streams
@@ -102,23 +102,23 @@ class ClassForm(forms.ModelForm):
         cleaned_data = super(ClassForm, self).clean()
         enteredclassname = cleaned_data.get("classname")
         enteredstream = cleaned_data.get("stream")
-        enteredteacher = cleaned_data.get("classteacher")
+        enteredfaculty = cleaned_data.get("classfaculty")
         slugifiedclass = slugify(enteredclassname + enteredstream.streamname)
 
         # Get number of items matching class name and stream name of current group
         checksclass = Groupclasses.objects.filter(group__id=self.currentgroup.id, slug=slugifiedclass).count()
 
-        # Get classes with this teacher
-        checkteacher = Groupclasses.objects.filter(classteacher=enteredteacher).count()
+        # Get classes with this faculty
+        checkfaculty = Groupclasses.objects.filter(classfaculty=enteredfaculty).count()
 
         # In case one is adding a class
         if self.currentstate == 'Add':
             if checksclass > 0:
                 raise forms.ValidationError("The class name with stream name should be unique")
 
-            # If class where the entered teacher is already a class teacher
-            if checkteacher > 0:
-                raise forms.ValidationError("The chosen teacher is a teacher in a different class.")
+            # If class where the entered faculty is already a class faculty
+            if checkfaculty > 0:
+                raise forms.ValidationError("The chosen faculty is a faculty in a different class.")
         # In case one is editing a group
         else:
             # Check if the entered name and stream matches the initial ones
@@ -126,10 +126,10 @@ class ClassForm(forms.ModelForm):
                 if checksclass > 0:
                     raise forms.ValidationError("The class name with stream name should be unique")
 
-            if (self.initialclassteacher != enteredteacher):
-                # If class where the entered teacher is already a class teacher
-                if checkteacher > 0:
-                    raise forms.ValidationError("The chosen teacher is a teacher in a different class.")
+            if (self.initialclassfaculty != enteredfaculty):
+                # If class where the entered faculty is already a class faculty
+                if checkfaculty > 0:
+                    raise forms.ValidationError("The chosen faculty is a faculty in a different class.")
 
 # Form for adding or editing Grouproutine model. Ensure the day entered is unique per group. Ensure the end time entered is greater than the start time entered.
 class RoutineForm(forms.ModelForm):
@@ -281,7 +281,7 @@ class BreaksForm(forms.ModelForm):
             else:
                 allbreaks = Groupbreaks.objects.filter(group__id=self.currentgroup.id, day=theday)
                 # Confirm if there is a specification in this range
-                allspecifications = GroupSpecifiction.objects.filter(groupsubjectteachers__groupsubjects__group__id=self.currentgroup.id, day=theday)
+                allspecifications = GroupSpecifiction.objects.filter(groupsubjectfaculties__groupsubjects__group__id=self.currentgroup.id, day=theday)
 
                 # In case one is performing an edit
                 if self.currentstate == 'Edit':
@@ -351,7 +351,7 @@ class GroupSubjectsForm(forms.ModelForm):
                     raise forms.ValidationError("The subject name should be unique per group")
 
 
-# Form for adding or editing Groupsubjectteachers model. Load subjects of this group from groupsubjects model of current group. Load classes of current group from Groupclasses model. Load teachers from teachers saved of the current college. For a lesson, a particular class and a particular subject has only one teacher.
+# Form for adding or editing Groupsubjectfaculties model. Load subjects of this group from groupsubjects model of current group. Load classes of current group from Groupclasses model. Load faculties from faculties saved of the current college. For a lesson, a particular class and a particular subject has only one faculty.
 class LessonForm(forms.ModelForm):
     
     nooflessonsperweek = forms.IntegerField(
@@ -361,8 +361,8 @@ class LessonForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Groupsubjectteachers
-        fields = ['groupsubjects', 'theclass', 'teacher', 'nooflessonsperweek']
+        model = Groupsubjectfaculties
+        fields = ['groupsubjects', 'theclass', 'faculty', 'nooflessonsperweek']
 
     def __init__(self, *args, **kwargs):
         self.currentcollege = kwargs.pop('thecollege')
@@ -384,10 +384,10 @@ class LessonForm(forms.ModelForm):
             queryset=Groupclasses.objects.filter(group__id=self.currentgroup.id),
         )
 
-        self.fields['teacher'] = forms.ModelChoiceField(
+        self.fields['faculty'] = forms.ModelChoiceField(
             required=True,
-            label='Choose the teacher',
-            queryset=Teachers.objects.filter(college__id=self.currentcollege.id),
+            label='Choose the faculty',
+            queryset=Faculties.objects.filter(college__id=self.currentcollege.id),
         )
 
         self.helper = FormHelper()
@@ -400,7 +400,7 @@ class LessonForm(forms.ModelForm):
         theclass = cleaned_data.get("theclass")
 
         # Check if lesson is present
-        checklesson = Groupsubjectteachers.objects.filter(groupsubjects=groupsubjects,theclass=theclass).count()
+        checklesson = Groupsubjectfaculties.objects.filter(groupsubjects=groupsubjects,theclass=theclass).count()
 
         # In case one is adding a lesson
         if self.currentstate == 'Add':
@@ -445,7 +445,7 @@ class GroupSpecifictionForm(forms.ModelForm):
 
     class Meta:
         model = GroupSpecifiction
-        fields = ['groupsubjectteachers', 'day', 'starttime', 'endtime']
+        fields = ['groupsubjectfaculties', 'day', 'starttime', 'endtime']
 
     def __init__(self, *args, **kwargs):
         self.currentgroup = kwargs.pop('thegroup')
@@ -453,10 +453,10 @@ class GroupSpecifictionForm(forms.ModelForm):
         self.initialspecification = kwargs.pop('thespecification')
         super(GroupSpecifictionForm, self).__init__(*args, **kwargs)
 
-        self.fields['groupsubjectteachers'] = forms.ModelChoiceField(
+        self.fields['groupsubjectfaculties'] = forms.ModelChoiceField(
             required=True,
             label='Choose the lesson',
-            queryset=Groupsubjectteachers.objects.filter(groupsubjects__group__id=self.currentgroup.id),
+            queryset=Groupsubjectfaculties.objects.filter(groupsubjects__group__id=self.currentgroup.id),
         )
 
         self.helper = FormHelper()
@@ -465,7 +465,7 @@ class GroupSpecifictionForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(GroupSpecifictionForm, self).clean()
-        chosenlesson = cleaned_data.get("groupsubjectteachers")
+        chosenlesson = cleaned_data.get("groupsubjectfaculties")
         chosenday = cleaned_data.get("day")
         starttime = cleaned_data.get("starttime")
         endtime = cleaned_data.get("endtime")
@@ -474,7 +474,7 @@ class GroupSpecifictionForm(forms.ModelForm):
             raise forms.ValidationError("The start time should be less and not equal to the endtime") 
 
         # Check if specification is present
-        checklesson = GroupSpecifiction.objects.filter(groupsubjectteachers=chosenlesson,day=chosenday, starttime=starttime, endtime=endtime).count()
+        checklesson = GroupSpecifiction.objects.filter(groupsubjectfaculties=chosenlesson,day=chosenday, starttime=starttime, endtime=endtime).count()
 
         # In case one is adding a specification
         if self.currentstate == 'Add':
@@ -483,7 +483,7 @@ class GroupSpecifictionForm(forms.ModelForm):
         # In case one is editing a lesson
         else:
             # Check if the entered details matches the initial ones
-            if (chosenlesson != self.initialspecification.groupsubjectteachers) and (chosenday != self.initialspecification.day) and (starttime != self.initialspecification.starttime) and (endtime != self.initialspecification.endtime):
+            if (chosenlesson != self.initialspecification.groupsubjectfaculties) and (chosenday != self.initialspecification.day) and (starttime != self.initialspecification.starttime) and (endtime != self.initialspecification.endtime):
                 if checklesson > 0:
                     raise forms.ValidationError("The specification already exists")
         
@@ -507,7 +507,7 @@ class GroupSpecifictionForm(forms.ModelForm):
             else:
                 # Perform validation only if initial data changes
                 if self.currentstate == 'Edit':
-                    if (chosenlesson != self.initialspecification.groupsubjectteachers) and (chosenday != self.initialspecification.day) and (starttime != self.initialspecification.starttime) and (endtime != self.initialspecification.endtime):
+                    if (chosenlesson != self.initialspecification.groupsubjectfaculties) and (chosenday != self.initialspecification.day) and (starttime != self.initialspecification.starttime) and (endtime != self.initialspecification.endtime):
                         # Confrim with breaks
                         allbreaks = Groupbreaks.objects.filter(group__id=self.currentgroup.id, day=chosenday)
 
@@ -516,7 +516,7 @@ class GroupSpecifictionForm(forms.ModelForm):
                                 raise forms.ValidationError("There is already a break in this given period")
 
                         # Confirm if there is a specification in this range
-                        allspecifications = GroupSpecifiction.objects.filter(groupsubjectteachers__groupsubjects__group__id=self.currentgroup.id, day=chosenday)
+                        allspecifications = GroupSpecifiction.objects.filter(groupsubjectfaculties__groupsubjects__group__id=self.currentgroup.id, day=chosenday)
 
                         for one in allspecifications:
                             if ((starttime <= one.starttime) and (endtime > one.starttime)) or ((starttime >= one.starttime) and (starttime < one.endtime)):
@@ -529,7 +529,7 @@ class GroupSpecifictionForm(forms.ModelForm):
                             raise forms.ValidationError("There is already a break in this given period")
 
                     # Confirm if there is a specification in this range
-                    allspecifications = GroupSpecifiction.objects.filter(groupsubjectteachers__groupsubjects__group__id=self.currentgroup.id, day=chosenday)
+                    allspecifications = GroupSpecifiction.objects.filter(groupsubjectfaculties__groupsubjects__group__id=self.currentgroup.id, day=chosenday)
 
                     for one in allspecifications:
                         if ((starttime <= one.starttime) and (endtime > one.starttime)) or ((starttime >= one.starttime) and (starttime < one.endtime)):

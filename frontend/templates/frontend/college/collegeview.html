@@ -17,7 +17,7 @@
   <a class="nav-link" href="{% url 'streamview' randomid=thecollege.randomid %}">Streams</a>
 </li>
 <li class="nav-item">
-  <a class="nav-link" href="{% url 'teacherview' randomid=thecollege.randomid %}">Teachers</a>
+  <a class="nav-link" href="{% url 'facultyview' randomid=thecollege.randomid %}">Faculties</a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="{% url 'timetablesview' randomid=thecollege.randomid %}">Timetables</a>
@@ -251,18 +251,18 @@ ss
 </div>
 {% endif %}
 
-{% if teachers|length > 0 %}
+{% if faculties|length > 0 %}
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
       <h5 class="card-title my_card_title">Faculties</h5>
     </div>
   </div>
-{% for teacher in teachers %}
+{% for faculty in faculties %}
 <div class="card mt-2 mx-3" style="width: 95%;">
     <div class="card-body">
-      <h5 class="card-title">{{ teacher.teachername }}</h5>
-      <a href="{% url 'editteacher' randomid=thecollege.randomid teacherrandomid=teacher.randomid %}" class="card-link">Edit Faculty</a>
-      {% if teacher.ifcandelete is True %}<a href="{% url 'deleteteachers' randomid=thecollege.randomid teacherrandomid=teacher.randomid %}" class="card-link">Delete faculty (This is not reversible)</a>
+      <h5 class="card-title">{{ faculty.facultyname }}</h5>
+      <a href="{% url 'editfaculty' randomid=thecollege.randomid facultyrandomid=faculty.randomid %}" class="card-link">Edit Faculty</a>
+      {% if faculty.ifcandelete is True %}<a href="{% url 'deletefaculties' randomid=thecollege.randomid facultyrandomid=faculty.randomid %}" class="card-link">Delete faculty (This is not reversible)</a>
       {% else %}<a href="#" class="card-link disabled">To delete this faculty, delete the timetable using this faculty.</a>{% endif %}
     </div>
 </div>
@@ -271,12 +271,12 @@ ss
     <div class="row">
         <div class="col-md-6">
             <button class="btn mt-2 mx-2"  style="width: 95%;">
-                <a href="{% url 'addteacher' randomid=thecollege.randomid %}">Add New Faculty</a>
+                <a href="{% url 'addfaculty' randomid=thecollege.randomid %}">Add New Faculty</a>
             </button>
           </div>
         <div class="col-md-6">
             <button class="btn mt-2 mx-2"  style="width: 95%;">
-              <a href="{% url 'teacherview' randomid=thecollege.randomid %}">View All Faculties</a>
+              <a href="{% url 'facultyview' randomid=thecollege.randomid %}">View All Faculties</a>
             </button>
         </div>
     </div>
@@ -291,7 +291,7 @@ ss
     <div class="row">
         <div class="col-md-12">
             <button class="btn mt-2 mx-2"  style="width: 95%;">
-                <a href="{% url 'addteacher' randomid=thecollege.randomid %}">Add New Faculty</a>
+                <a href="{% url 'addfaculty' randomid=thecollege.randomid %}">Add New Faculty</a>
             </button>
           </div>
     </div>

@@ -1,14 +1,14 @@
 import imp
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
-from .forms import RegisterForm, LoginForm, EditAccountForm, ChangePasswForm, CollegeForm, StreamForm, TeachersForm, SubjectsForm, TeachersRoutineFormHelper, addteacherroutineformset, editteacherroutineformset
+from .forms import RegisterForm, LoginForm, EditAccountForm, ChangePasswForm, CollegeForm, StreamForm, FacultiesForm, SubjectsForm, FacultiesRoutineFormHelper, addfacultyroutineformset, editfacultyroutineformset
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import login, authenticate, update_session_auth_hash, logout
 from django.contrib import messages
-from .models import Subjects, User, College, Teachers, Streams
+from .models import Subjects, User, College, Faculties, Streams
 from groups.models import CollegeGroups
 from timetable.models import Timetablegroup
-from .utilities import generate_random_id, generate_random_id_forcollege, generate_random_id_forteacher
+from .utilities import generate_random_id, generate_random_id_forcollege, generate_random_id_forfaculty
 from django.contrib.auth.decorators import login_required
 import random
 from timetable.timetable import checktimetablerequiremnets_group, checktimetablerequiremnets_college
@@ -213,10 +213,10 @@ def deletecollege(request, randomid):
 def collegeview(request, randomid):
     # Check if the college exists
     thecollege = get_object_or_404(College, randomid=randomid)
-    # Show college related information?9only three in number. Groups, Subjects, Streams, Teachers, Timetables
+    # Show college related information?9only three in number. Groups, Subjects, Streams, Faculties, Timetables
     subjects = Subjects.objects.filter(college__randomid=randomid)[:3]
     collegegroups = CollegeGroups.objects.filter(college__randomid=randomid)[:3]
-    teachers = Teachers.objects.filter(college__randomid=randomid)[:3]
+    faculties = Faculties.objects.filter(college__randomid=randomid)[:3]
     streams = Streams.objects.filter(college__randomid=randomid)[:3]
     # Check if the college meets requirements for a timetable
     no_of_errors = checktimetablerequiremnets_college(thecollege)
@@ -240,7 +240,7 @@ def collegeview(request, randomid):
         result = False
         list_of_errors = no_of_errors
     timetables = Timetablegroup.objects.filter(college__randomid=randomid)[:3]
-    return render(request, "frontend/college/collegeview.html", {"thecollege":thecollege, "subjects":subjects, "collegegroups":collegegroups, "teachers":teachers, "streams":streams,"timetables":timetables, "list_of_errors":list_of_errors, "result":result})
+    return render(request, "frontend/college/collegeview.html", {"thecollege":thecollege, "subjects":subjects, "collegegroups":collegegroups, "faculties":faculties, "streams":streams,"timetables":timetables, "list_of_errors":list_of_errors, "result":result})
 
 # Show all streams for a given college
 @login_required
@@ -320,91 +320,91 @@ def streamsdelete(request, randomid, streamslug):
     gotourl = reverse("streamview", kwargs={"randomid":randomid})
     return redirect(gotourl)
 
-# Show all teachers of a given college
+# Show all faculties of a given college
 @login_required
-def teachersview(request, randomid):
+def facultiesview(request, randomid):
     # Check if the college exists
     thecollege = get_object_or_404(College, randomid=randomid)
     # Get the streams of this college
-    teachers = Teachers.objects.filter(college__randomid=randomid)
-    return render(request, "frontend/college/teachersview.html", {"teachers":teachers, "thecollege":thecollege})
+    faculties = Faculties.objects.filter(college__randomid=randomid)
+    return render(request, "frontend/college/facultiesview.html", {"faculties":faculties, "thecollege":thecollege})
 
-# Add a teacher
+# Add a faculty
 @login_required
-def teacheradd(request, randomid):
+def facultyadd(request, randomid):
     # Check if the college exists
     thecollege = get_object_or_404(College, randomid=randomid)
     # Store title of page
-    thelabel = 'Add A Teacher'
+    thelabel = 'Add A Faculty'
     # initialize the form
-    teacher_form = TeachersForm()
-    teacherroutineform = addteacherroutineformset()
-    teacher_form_helper = TeachersRoutineFormHelper()
+    faculty_form = FacultiesForm()
+    facultyroutineform = addfacultyroutineformset()
+    faculty_form_helper = FacultiesRoutineFormHelper()
 
     if request.method == 'POST':
-        teacher_form = TeachersForm(request.POST)
-        form_set = addteacherroutineformset(request.POST)
-        # If both teachers form and teachers routine form is valid
-        if teacher_form.is_valid():
-            # Save the teacher
-            the_new_teacher = teacher_form.save(commit=False)
-            the_new_teacher.college = thecollege
-            the_new_teacher.randomid = generate_random_id_forteacher()
-            form_set = addteacherroutineformset(request.POST, instance=the_new_teacher)
+        faculty_form = FacultiesForm(request.POST)
+        form_set = addfacultyroutineformset(request.POST)
+        # If both faculties form and faculties routine form is valid
+        if faculty_form.is_valid():
+            # Save the faculty
+            the_new_faculty = faculty_form.save(commit=False)
+            the_new_faculty.college = thecollege
+            the_new_faculty.randomid = generate_random_id_forfaculty()
+            form_set = addfacultyroutineformset(request.POST, instance=the_new_faculty)
             if form_set.is_valid():
-                the_new_teacher.save()
+                the_new_faculty.save()
                 form_set.save()
-                messages.success(request, "You successfully added a teacher")
-                gotourl = reverse("teacherview", kwargs={"randomid":randomid})
+                messages.success(request, "You successfully added a faculty")
+                gotourl = reverse("facultyview", kwargs={"randomid":randomid})
                 return redirect(gotourl)
             else:
                 # Show there is an error
                 messages.success(request, "You have either specified the routine for a day more than once or for one day, the start time is greater than or equal to the endtime")
-    return render(request, "frontend/college/teachersform.html", {"form":teacher_form,"formset":teacherroutineform,"formset_helper":teacher_form_helper, "thecollege":thecollege,"thelabel":thelabel})
+    return render(request, "frontend/college/facultiesform.html", {"form":faculty_form,"formset":facultyroutineform,"formset_helper":faculty_form_helper, "thecollege":thecollege,"thelabel":thelabel})
 
-# Edit a teacher
+# Edit a faculty
 @login_required
-def teacheredit(request, randomid, teacherrandomid):
+def facultyedit(request, randomid, facultyrandomid):
     # Check if the college exists
     thecollege = get_object_or_404(College, randomid=randomid)
-    # Check if the teacher exists
-    theteacher = get_object_or_404(Teachers, college__randomid=randomid, randomid=teacherrandomid)
+    # Check if the faculty exists
+    thefaculty = get_object_or_404(Faculties, college__randomid=randomid, randomid=facultyrandomid)
     # Store title of page
-    thelabel = 'Edit A Teacher'
+    thelabel = 'Edit A Faculty'
     # initialize the form
     # Store current information in DB
     update_initial = {}
-    update_initial["teachername"] = theteacher.teachername
-    teacherform = TeachersForm(data=update_initial)
+    update_initial["facultyname"] = thefaculty.facultyname
+    facultyform = FacultiesForm(data=update_initial)
 
-    # teacher_form = TeachersForm()
-    teacherroutineform = editteacherroutineformset(instance=theteacher)
-    teacher_form_helper = TeachersRoutineFormHelper()
+    # faculty_form = FacultiesForm()
+    facultyroutineform = editfacultyroutineformset(instance=thefaculty)
+    faculty_form_helper = FacultiesRoutineFormHelper()
 
     if request.method == 'POST':
-        teacherform = TeachersForm(request.POST)
-        if teacherform.is_valid():
-            # Save the teacher changes
-            theteacher.teachername = teacherform.cleaned_data['teachername']
-            theteacher.save()
-            messages.success(request, "You successfully edited a teacher")
-            gotourl = reverse("teacherview", kwargs={"randomid":randomid})
+        facultyform = FacultiesForm(request.POST)
+        if facultyform.is_valid():
+            # Save the faculty changes
+            thefaculty.facultyname = facultyform.cleaned_data['facultyname']
+            thefaculty.save()
+            messages.success(request, "You successfully edited a faculty")
+            gotourl = reverse("facultyview", kwargs={"randomid":randomid})
             return redirect(gotourl)
-    return render(request, "frontend/college/teacherformsedit.html", {"form":teacherform,"formset":teacherroutineform,"formset_helper":teacher_form_helper, "thecollege":thecollege,"thelabel":thelabel, "ateacherrandomid":teacherrandomid})
+    return render(request, "frontend/college/facultyformsedit.html", {"form":facultyform,"formset":facultyroutineform,"formset_helper":faculty_form_helper, "thecollege":thecollege,"thelabel":thelabel, "afacultyrandomid":facultyrandomid})
 
-# Delete a teacher
+# Delete a faculty
 @login_required
-def teacherdelete(request, randomid, teacherrandomid):
+def facultydelete(request, randomid, facultyrandomid):
     # Check if the college exists
     get_object_or_404(College, randomid=randomid)
-    # Check if the teacher exists
-    theteacher = get_object_or_404(Teachers, college__randomid=randomid, randomid=teacherrandomid)
-    if theteacher.ifcandelete() == True:
-        theteacher.delete()
-        messages.success(request, "You successfully deleted a teacher")
+    # Check if the faculty exists
+    thefaculty = get_object_or_404(Faculties, college__randomid=randomid, randomid=facultyrandomid)
+    if thefaculty.ifcandelete() == True:
+        thefaculty.delete()
+        messages.success(request, "You successfully deleted a faculty")
     else:
-        messages.success(request, "Sorry, you can not delete this teacher. Delete the timetable using with teacher")
-    gotourl = reverse("teacherview", kwargs={"randomid":randomid})
+        messages.success(request, "Sorry, you can not delete this faculty. Delete the timetable using with faculty")
+    gotourl = reverse("facultyview", kwargs={"randomid":randomid})
     return redirect(gotourl)
 
 # Show all subjects

@@ -12,17 +12,17 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='TeachersRoutine',
+            name='FacultiesRoutine',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('day', models.CharField(choices=[('Sunday', 'Sunday'), ('Monday', 'Monday'), ('Tuesday', 'Tuesday'), ('Wednesday', 'Wednesday'), ('Thursday', 'Thursday'), ('Friday', 'Friday'), ('Saturday', 'Saturday')], max_length=20)),
                 ('starttime', models.TimeField()),
                 ('endtime', models.TimeField()),
-                ('teacher', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.teachers')),
+                ('faculty', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='college.faculties')),
             ],
             options={
-                'verbose_name': 'Teacher Routine',
-                'verbose_name_plural': 'Teacher Routines',
+                'verbose_name': 'Faculty Routine',
+                'verbose_name_plural': 'Faculty Routines',
             },
         ),
     ]

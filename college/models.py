@@ -59,43 +59,43 @@ class Subjects(models.Model):
         else:
             return True
 
-# Store info on teachers by a given . Has a method to check if an object can be deleted.
-class Teachers(models.Model):
+# Store info on faculties by a given . Has a method to check if an object can be deleted.
+class Faculties(models.Model):
     college = models.ForeignKey(College, on_delete=models.CASCADE)
-    teachername = models.CharField(max_length=100)
+    facultyname = models.CharField(max_length=100)
     randomid = models.CharField(max_length=60, unique=True)
 
     class Meta:
-        verbose_name = ("Teacher")
-        verbose_name_plural = ("Teachers")
+        verbose_name = ("Faculty")
+        verbose_name_plural = ("Faculties")
 
     def __str__(self):
-        return f"{self.teachername}"
+        return f"{self.facultyname}"
 
-    # Check if can delete this teacher
+    # Check if can delete this faculty
     def ifcandelete(self):
         from timetable.models import Timetablelessons
-        check1 = Timetablelessons.objects.filter(teacher__id=self.id).count()
+        check1 = Timetablelessons.objects.filter(faculty__id=self.id).count()
 
-        # If there are timetable models using this teacher
+        # If there are timetable models using this faculty
         if (check1 > 0):
             return False
         else:
             return True
 
-# Store info on routine by a given teacher.
-class TeachersRoutine(models.Model):
-    teacher = models.ForeignKey(Teachers, on_delete=models.CASCADE)
+# Store info on routine by a given faculty.
+class FacultiesRoutine(models.Model):
+    faculty = models.ForeignKey(Faculties, on_delete=models.CASCADE)
     day = models.CharField(max_length=20, choices=settings.DAYS)
     starttime = models.TimeField()
     endtime = models.TimeField()
 
     class Meta:
-        verbose_name = ("Teacher Routine")
-        verbose_name_plural = ("Teacher Routines")
+        verbose_name = ("Faculty Routine")
+        verbose_name_plural = ("Faculty Routines")
 
     def __str__(self):
-        return f"{self.teacher.teachername} Routine on {self.day}"
+        return f"{self.faculty.facultyname} Routine on {self.day}"
 
 # Store info on streams by a given college. Has a method to check if an object can be deleted.
 class Streams(models.Model):

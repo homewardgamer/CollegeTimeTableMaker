@@ -21,5 +21,5 @@ class GroupclassesAdmin(admin.ModelAdmin):
     
 admin.site.register(Groupclasses, GroupclassesAdmin)
 
-admin.site.register(Groupsubjectteachers)
+admin.site.register(Groupsubjectfaculties)
 admin.site.register(GroupSpecifiction)
