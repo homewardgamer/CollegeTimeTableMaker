@@ -1,0 +1,13 @@
+[Unit]
+Description=College Time Table Maker
+After=network.target
+
+[Service]
+# Runtime configuration
+Type=simple
+WorkingDirectory=/home/ubuntu/CollegeTimeTableMaker
+ExecStart=/home/ubuntu/venv/bin/python3 manage.py runserver
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
