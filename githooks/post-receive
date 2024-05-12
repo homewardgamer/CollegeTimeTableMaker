@@ -56,6 +56,10 @@ check_and_activate_venv
 # Install the Python Dependencies
 runwrap "Installing python dependencies ..." pip install -r requirements.txt
 
+# Perform daemon-reload for Systemd
+# for updated `django.service` file
+runwrap "Reloading systemd daemon ..." systemctl --user daemon-reload
+
 # Restart the Django service
 runwrap "Restarting django.service ..." systemctl --user restart django
 
