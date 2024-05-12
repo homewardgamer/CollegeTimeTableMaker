@@ -1,8 +1,8 @@
-# TimetableGenerator
+# CollegeTimeTableMaker
 
 > This is a django project used to generate timetables for a college which could be output as a pdf and downloaded.
 
-![Timetable](screenshots/timetable.jpg "A generated timetable output for a class")
+![Timetable](screenshots/timetable.png "A generated timetable output for a class")
 
 # Requirements  (Prerequisites)
 Tools and packages required to successfully install this project.
@@ -65,7 +65,7 @@ Here are some of the screenshots of the application.
 
 ![Home page](screenshots/homepage.png "Home Page")
 
-![College page](screenshots/timetable_2.jpg "Colleges home page")
+![College page](screenshots/timetable_2.png "Colleges home page")
 
 # Features
 - Lesson specification at a particular time.
@@ -90,13 +90,11 @@ Here are some of the screenshots of the application.
 
     ---
 
-    ![College](screenshots/college_1.jpg)
+    ![College](screenshots/college_1.png)
 
-    ![College](screenshots/college_2.jpg)
+    ![College](screenshots/college_2.png)
 
     > When you do all the above steps, the college home page will change as follows. The page will show you, what for each group to generate a timetable
-
-    ![College home page example 2](screenshots/college_home2.png "College home page example 2")
 
 - For each group you have created:
 
@@ -109,9 +107,9 @@ Here are some of the screenshots of the application.
 
     ---
 
-    ![College Group](screenshots/group_1.jpg)
+    ![College Group](screenshots/group_1.png)
 
-    ![College Group](screenshots/group_2.jpg)
+    ![College Group](screenshots/group_2.png)
 
 - If you have done all the above steps, you may ***check if your college meets the reqirements to generate a timetable*** in the college's homepage.
 - If you meet all requirements, you may generate a timetable. Any erros will be reported in case they occur.
@@ -127,15 +125,3 @@ The django project is divide in to four apps.
 
 # Built With
 1. [Django](https://djangoproject.com/) - The Django framework
-
-# Author
-
-The author of this project is Richard Odhiambo.
-
- You can find me here at:
-[Github](https://github.com/o-richard)
-[LinkedIn](https://www.linkedin.com/in/richard-o-505bb3172/)
-
-# License
-
-This project is licensed under the MIT License.
