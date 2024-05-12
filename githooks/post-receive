@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+# Set the variables
+BRANCH="main"
+WORKDIR="$HOME/CollegeTimeTableMaker"
+VENV_PATH="$HOME/venv"
+
+# Checks for the existing
+# virtualenv and activates it
+function check_and_activate_venv {
+	# Check if the virtualenv is missing
+	if [ ! -d "$VENV_PATH" ]; then
+		echo "Virtualenv missing at: $VENV_PATH"
+		exit 1
+	fi
+
+	# Activate the virtualenv
+	source "$VENV_PATH/bin/activate"
+}
+
+# Prints the command in bold and
+# runs it with the padded output
+function runwrap {
+	# Get the command
+	TITLE="$1"; shift 1
+	CMD="$@"
+
+	# Print the command with the title
+	echo -e "\e[1;37m$TITLE\e[0m"
+	echo -e "\e[1;37m>\e[0m \e[0;36m$CMD\e[0m"
+
+	# Run it with padded output
+	# NOTE: Skip padding at start of each line
+	# because commands are messing it up using
+	# escape sequences to update their outputs
+	script /dev/null -qec "$CMD" # | sed -e 's/^/\t/'
+
+	# Check for exit code and exit on failure
+	EXITCODE=$?
+	if [ $EXITCODE -ne 0 ]; then
+		echo "error: command '$CMD' failed with $EXITCODE exitcode"
+		exit $EXITCODE
+	fi
+
+	# Print a newline after current command for spacing
+	echo
+}
+
+# Switch to the working directory
+cd "$WORKDIR"
+
+# Activate the virtual environment
+runwrap "Activating virtualenv ..."
+check_and_activate_venv
+
+# Install the Python Dependencies
+runwrap "Installing python dependencies ..." pip install -r requirements.txt
+
+# Restart the Django service
+runwrap "Restarting django.service ..." systemctl --user restart django
+
+# Show the status of the service
+runwrap "Check service status ..." systemctl --user status django
