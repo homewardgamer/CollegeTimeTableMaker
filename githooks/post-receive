@@ -61,7 +61,7 @@ runwrap "Installing python dependencies ..." pip install -r requirements.txt
 runwrap "Reloading systemd daemon ..." systemctl --user daemon-reload
 
 # Restart the Django service
-runwrap "Restarting django.service ..." systemctl --user restart django
+runwrap "Restarting django.service ..." systemctl --user start django
 
 # Show the status of the service
 runwrap "Check service status ..." systemctl --user status django
